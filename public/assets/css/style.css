@@ -69,6 +69,15 @@ a:hover { color: var(--or-fonce); }
     letter-spacing: .06em;
 }
 .entete nav a:hover { color: var(--or); }
+/* Séparateur visuel entre les liens back-office et les liens site public */
+.entete nav a.nav-sep {
+    margin-left: 1.5rem;
+    padding-left: 1.25rem;
+    border-left: 1px solid rgba(255,255,255,.25);
+}
+@media (max-width: 560px) {
+    .entete nav a.nav-sep { border-left: none; padding-left: 0; }
+}
 
 /* --- Conteneur --- */
 .conteneur {

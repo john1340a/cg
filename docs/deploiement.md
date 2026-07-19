@@ -146,4 +146,4 @@ php -r "require 'vendor/autoload.php'; App\Core\Env::load(); App\Core\RateLimite
 - [ ] L'iframe s'affiche dans la page WordPress de test (desktop + mobile).
 - [ ] Le back-office `/admin/` est accessible avec le compte admin.
 
-Voir aussi la **checklist de recette** : `RECETTE.md`.
+Voir aussi la **checklist de recette** : [`recette.md`](recette.md).

@@ -19,10 +19,16 @@ body.page-carte { display: flex; flex-direction: column; }
     background: #fff;
     border-right: 1px solid var(--gris-bord);
     overflow-y: auto;
+    overflow-x: hidden;      /* pas de scroll horizontal dans le panneau */
     padding: 1rem;
 }
 .panneau h2 { font-size: 1.05rem; margin-top: 1rem; }
 .bascule-panneau { display: none; margin-bottom: .5rem; }
+
+/* Les colonnes de la grille des filtres peuvent rétrécir sous la largeur
+   intrinsèque des champs date (sinon « Jusqu'au » déborde du panneau). */
+.panneau .ligne-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.panneau input, .panneau select { min-width: 0; max-width: 100%; }
 
 .liste-events { display: flex; flex-direction: column; gap: .6rem; }
 .event-item {

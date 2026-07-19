@@ -6,6 +6,7 @@
     <title>Carte des bourses aux minéraux</title>
     <link rel="stylesheet" href="/assets/vendor/maplibre-gl.css">
     <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/icons.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/carte.css">
     <style>
@@ -19,7 +20,7 @@
         <!-- Panneau latéral compact -->
         <aside class="panneau" id="panneau">
             <button class="btn secondaire petit bascule-panneau" id="bascule-panneau"
-                    aria-expanded="true">Filtres ▾</button>
+                    aria-expanded="true">Filtres</button>
             <div class="panneau-contenu" id="panneau-contenu">
                 <h2 style="margin-top:0;">Filtres</h2>
                 <div class="champ">
@@ -54,7 +55,7 @@
                 <hr>
                 <h2>Événements <span id="compteur" class="muet"></span></h2>
                 <div id="liste-events" class="liste-events"><p class="muet">Chargement…</p></div>
-                <p class="aide espace"><a href="/carte.html" target="_blank" rel="noopener">Ouvrir en plein écran ↗</a></p>
+                <p class="aide espace"><a href="/carte.html" target="_blank" rel="noopener">Ouvrir en plein écran<span class="msi" aria-hidden="true" style="font-size:1em">open_in_new</span></a></p>
             </div>
         </aside>
 

@@ -77,58 +77,30 @@ En local, `MAIL_ENABLED=false` : les emails ne sont pas expédiés mais **écrit
 
 ---
 
-## API REST (résumé)
+## Documentation
 
-Toutes les mutations exigent un jeton **CSRF** (`GET /api/csrf` → header `X-CSRF-Token`).
-Sessions en cookie `HttpOnly` + `SameSite=Lax`.
+La documentation technique détaillée se trouve dans [`docs/`](docs/) :
 
-**Public**
-- `GET /api/events` — GeoJSON des annonces **publiées** (filtres : `mois`, `debut`, `fin`, `categorie`, `type`, `passes`)
-- `GET /api/events/{id}` — détail public
-- `GET /api/affiche/{fichier}` — sert une affiche (accès contrôlé)
-
-**Auth**
-- `POST /api/auth/register|login|logout|forgot|reset`, `GET /api/auth/me`
-- `POST /api/geocode` — proxy BAN (authentifié)
-
-**Organisateur**
-- `GET/POST /api/mes-annonces`, `PUT/DELETE /api/mes-annonces/{id}`, `POST /api/mes-annonces/{id}/soumettre`
-
-**Admin**
-- `GET /api/admin/events`, `POST /api/admin/events` (saisie déléguée)
-- `POST /api/admin/events/{id}/paiement-recu|valider|rejeter`
-- `GET /api/admin/users`, `POST /api/admin/users/{id}/desactiver`
-- `GET/PUT /api/admin/settings`
-- `GET/POST /api/admin/subscribers`, `POST /api/admin/subscribers/import`, `DELETE /api/admin/subscribers/{id}`
-
-**Embed**
-- `GET /embed.html` — carte pour iframe (émet l'en-tête CSP `frame-ancestors`)
+| Document | Contenu |
+|----------|---------|
+| [`docs/architecture/overview.md`](docs/architecture/overview.md) | vue d'ensemble, patterns MVC, machine à états, flux, routes, modèle de données |
+| [`docs/libs/core.md`](docs/libs/core.md) | socle technique (PHP, PostGIS, PHPMailer) et couche `src/Core/` |
+| [`docs/libs/backend.md`](docs/libs/backend.md) | contrôleurs, services, modèles, sécurité |
+| [`docs/libs/frontend.md`](docs/libs/frontend.md) | JS vanilla, MapLibre, direction artistique, embed iframe |
+| [`docs/deploiement.md`](docs/deploiement.md) | mise en production sur alwaysdata + intégration WordPress |
+| [`docs/recette.md`](docs/recette.md) | checklist de recette du parcours complet |
 
 ---
 
-## Cycle de vie d'une annonce
+## En bref
 
-```
-brouillon
-  └─ soumettre ─▶ abonné & 1re annonce ─▶ en_attente_validation  (gratuite, paiement exonéré)
-                 sinon                  ─▶ en_attente_paiement    (+ email instructions)
-en_attente_paiement ─ admin: paiement reçu ─▶ en_attente_validation
-en_attente_validation ─ admin: valider ─▶ publie   (+ email, visible sur la carte)
-en_attente_validation ─ admin: rejeter ─▶ rejete   (+ email avec motif)
-```
-
-Une annonce non `publie` **n'apparaît jamais** sur la carte publique.
-
----
-
-## Sécurité
-
-- Requêtes **PDO préparées** partout ; validation/échappement systématique.
-- **CSRF** sur toutes les mutations ; sessions durcies (HttpOnly, SameSite, Secure en prod).
-- **Rate limiting** sur login / inscription / mot de passe oublié.
-- Uploads : contrôle **MIME réel** (finfo), renommage aléatoire, **redimensionnement GD**,
-  stockage **hors document root**, service via endpoint contrôlé.
-- Emails : contenu dynamique **échappé** (anti-injection).
-- Iframe : **CSP `frame-ancestors`** limitée au(x) domaine(s) du client (configurable).
-
-Voir `DEPLOIEMENT.md` pour la mise en production sur alwaysdata.
+- **API REST JSON** ; toute mutation exige un jeton CSRF (`GET /api/csrf` →
+  en-tête `X-CSRF-Token`). Voir les routes dans
+  [`docs/architecture/overview.md`](docs/architecture/overview.md#routes-api-résumé).
+- **Cycle de vie d'une annonce** : `brouillon → en_attente_paiement /
+  en_attente_validation → publie / rejete`. Une annonce non `publie`
+  n'apparaît **jamais** sur la carte. Paiement (10 €) hors application,
+  marqué reçu manuellement par l'admin.
+- **Sécurité** : PDO préparé, CSRF, sessions durcies, rate limiting, uploads
+  contrôlés (MIME réel + resize GD, hors racine web), CSP `frame-ancestors`
+  pour l'iframe. Détails dans [`docs/libs/backend.md`](docs/libs/backend.md#sécurité).

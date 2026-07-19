@@ -23,11 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     el('form-connexion').addEventListener('submit', async (e) => {
         e.preventDefault();
         try {
-            await API.post('/api/auth/login', {
+            const r = await API.post('/api/auth/login', {
                 email: el('c-email').value.trim(),
                 password: el('c-mdp').value,
             });
-            window.location.href = '/compte/';
+            // Un admin est dirigé vers le back-office, un organisateur vers son espace.
+            const destination = (r.user && r.user.role === 'admin') ? '/admin/' : '/compte/';
+            window.location.href = destination;
         } catch (err) {
             afficherAlerte('alerte', err.message);
         }

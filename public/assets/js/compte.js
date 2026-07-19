@@ -21,6 +21,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         + (user.est_abonne ? 'Vous êtes abonné : votre première annonce est gratuite.'
                            : 'Chaque annonce coûte 10 € (paiement hors ligne).');
 
+    // Un admin qui atterrit ici garde un accès direct au back-office.
+    if (user.role === 'admin') {
+        const nav = document.querySelector('.entete nav');
+        if (nav && !document.getElementById('lien-admin')) {
+            const a = document.createElement('a');
+            a.id = 'lien-admin';
+            a.href = '/admin/';
+            a.textContent = 'Administration';
+            nav.insertBefore(a, nav.firstChild);
+        }
+    }
+
     el('lien-deconnexion').addEventListener('click', async (e) => {
         e.preventDefault();
         try { await API.post('/api/auth/logout'); } catch (_) {}

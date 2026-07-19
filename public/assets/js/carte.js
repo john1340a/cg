@@ -59,6 +59,7 @@ function initCarte(options = {}) {
         style: styleFond('osm'),
         center: [2.4, 46.6],
         zoom: 5,
+        attributionControl: false,   // on gère l'attribution nous-mêmes (évite le doublon)
     });
     carte.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
     carte.addControl(new maplibregl.AttributionControl({ compact: true }));
@@ -150,13 +151,13 @@ function ouvrirPopup(feature) {
 
     const lignes = document.createElement('div');
     lignes.className = 'lignes';
-    lignes.appendChild(ligne('📅', formatPeriode(p.date_debut, p.date_fin)));
-    lignes.appendChild(ligne('📍', p.adresse));
-    if (p.tarif) lignes.appendChild(ligne('🎫', 'Entrée : ' + p.tarif));
+    lignes.appendChild(ligne('event', formatPeriode(p.date_debut, p.date_fin)));
+    lignes.appendChild(ligne('place', p.adresse));
+    if (p.tarif) lignes.appendChild(ligne('local_activity', 'Entrée : ' + p.tarif));
     const types = [];
     if (p.type_echanges) types.push('Échanges');
     if (p.type_vente) types.push('Vente');
-    if (types.length) lignes.appendChild(ligne('🔖', types.join(' + ')));
+    if (types.length) lignes.appendChild(ligne('sell', types.join(' + ')));
     div.appendChild(lignes);
 
     // Étiquettes de catégories
@@ -179,14 +180,16 @@ function ouvrirPopup(feature) {
         const a = document.createElement('a');
         a.href = 'mailto:' + p.contact_email;
         a.textContent = p.contact_email;
-        const d = document.createElement('div'); d.textContent = '✉️ ';
+        const d = document.createElement('div');
+        d.appendChild(icone('mail')); d.appendChild(document.createTextNode(' '));
         d.appendChild(a); contact.appendChild(d);
     }
     if (p.site_web) {
         const a = document.createElement('a');
         a.href = p.site_web; a.target = '_blank'; a.rel = 'noopener noreferrer';
         a.textContent = 'Site web';
-        const d = document.createElement('div'); d.textContent = '🌐 ';
+        const d = document.createElement('div');
+        d.appendChild(icone('language')); d.appendChild(document.createTextNode(' '));
         d.appendChild(a); contact.appendChild(d);
     }
     div.appendChild(contact);
@@ -208,10 +211,29 @@ function ouvrirPopup(feature) {
         .addTo(carte);
 }
 
+/**
+ * Crée une ligne « icône Material Symbol + texte ».
+ * @param {string} icone  nom de l'icône (ligature Material Symbols)
+ * @param {string} texte
+ */
 function ligne(icone, texte) {
     const d = document.createElement('div');
-    d.textContent = `${icone} ${texte}`;
+    const i = document.createElement('span');
+    i.className = 'msi';
+    i.setAttribute('aria-hidden', 'true');
+    i.textContent = icone;
+    d.appendChild(i);
+    d.appendChild(document.createTextNode(' ' + texte));
     return d;
+}
+
+/** Icône Material Symbol seule (élément span). */
+function icone(nom) {
+    const i = document.createElement('span');
+    i.className = 'msi';
+    i.setAttribute('aria-hidden', 'true');
+    i.textContent = nom;
+    return i;
 }
 
 /* ---------- Liste latérale ---------- */
@@ -343,10 +365,16 @@ function brancherBasculePanneau() {
     const btn = el('bascule-panneau');
     const contenu = el('panneau-contenu');
     if (!btn || !contenu) return;
+
+    // Structure : libellé « Filtres » + icône chevron
+    btn.textContent = 'Filtres ';
+    const chevron = icone('expand_more');
+    btn.appendChild(chevron);
+
     btn.addEventListener('click', () => {
         const replie = contenu.classList.toggle('replie');
         btn.setAttribute('aria-expanded', String(!replie));
-        btn.textContent = replie ? 'Filtres ▸' : 'Filtres ▾';
+        chevron.textContent = replie ? 'chevron_right' : 'expand_more';
     });
 }
 
