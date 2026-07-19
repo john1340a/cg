@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mon espace — Bourses aux Minéraux</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Bourses aux Minéraux</a>
+        <nav>
+            <a href="/carte.html">Carte</a>
+            <a href="/compte/annonce.html">+ Nouvelle annonce</a>
+            <a href="#" id="lien-deconnexion">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="conteneur">
+        <div id="alerte"></div>
+        <div class="carte-panneau">
+            <h1>Mes annonces</h1>
+            <p class="muet" id="bienvenue"></p>
+            <p><a class="btn" href="/compte/annonce.html">+ Créer une annonce</a></p>
+            <div id="liste-annonces" class="espace">
+                <p class="muet">Chargement…</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/compte.js"></script>
+</body>
+</html>

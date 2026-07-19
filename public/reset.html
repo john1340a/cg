@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Réinitialisation du mot de passe — Bourses aux Minéraux</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Bourses aux Minéraux</a>
+    </header>
+    <main class="conteneur" style="max-width:460px;">
+        <div id="alerte"></div>
+        <section class="carte-panneau">
+            <h1>Nouveau mot de passe</h1>
+            <form id="form-reset" novalidate>
+                <div class="champ">
+                    <label for="r-mdp">Nouveau mot de passe</label>
+                    <input type="password" id="r-mdp" required minlength="8" autocomplete="new-password">
+                    <p class="aide">8 caractères minimum.</p>
+                </div>
+                <div class="champ">
+                    <label for="r-mdp2">Confirmer le mot de passe</label>
+                    <input type="password" id="r-mdp2" required minlength="8" autocomplete="new-password">
+                </div>
+                <button class="btn" type="submit">Valider</button>
+            </form>
+        </section>
+    </main>
+    <script src="/assets/js/api.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token') || '';
+        if (!token) { afficherAlerte('alerte', 'Lien invalide : jeton manquant.'); }
+
+        el('form-reset').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const m1 = el('r-mdp').value, m2 = el('r-mdp2').value;
+            if (m1.length < 8) { afficherAlerte('alerte', 'Mot de passe trop court (8 caractères min.).'); return; }
+            if (m1 !== m2) { afficherAlerte('alerte', 'Les deux mots de passe ne correspondent pas.'); return; }
+            try {
+                const r = await API.post('/api/auth/reset', { token, password: m1 });
+                afficherAlerte('alerte', r.message + ' Redirection…', 'succes');
+                setTimeout(() => { window.location.href = '/connexion.html'; }, 1500);
+            } catch (err) {
+                afficherAlerte('alerte', err.message);
+            }
+        });
+    });
+    </script>
+</body>
+</html>

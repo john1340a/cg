@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administration — Modération</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Administration</a>
+        <nav>
+            <a href="/admin/">Modération</a>
+            <a href="/admin/abonnes.html">Abonnés</a>
+            <a href="/admin/utilisateurs.html">Utilisateurs</a>
+            <a href="/admin/parametres.html">Paramètres</a>
+            <a href="#" id="lien-deconnexion">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="conteneur">
+        <div id="alerte"></div>
+        <div class="carte-panneau">
+            <h1>File de modération</h1>
+            <div class="champ">
+                <label for="f-statut">Filtrer par statut</label>
+                <select id="f-statut">
+                    <option value="en_attente_validation">En attente de validation</option>
+                    <option value="en_attente_paiement">En attente de paiement</option>
+                    <option value="publie">Publiées</option>
+                    <option value="rejete">Rejetées</option>
+                    <option value="brouillon">Brouillons</option>
+                    <option value="">Toutes</option>
+                </select>
+            </div>
+            <div id="liste-moderation" class="espace">
+                <p class="muet">Chargement…</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initModeration());</script>
+</body>
+</html>

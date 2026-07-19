@@ -1,0 +1,22 @@
+/* ============================================================
+   Polices locales — DA mineralogique.com
+   Montserrat (titres) + Roboto (texte courant).
+   Fichiers variables servis en local pour compatibilité avec
+   la CSP stricte de l'embed iframe (aucun CDN externe).
+   ============================================================ */
+
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 300 700;          /* police variable : plage de graisses */
+    font-display: swap;
+    src: url('/assets/fonts/montserrat.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url('/assets/fonts/roboto.woff2') format('woff2');
+}

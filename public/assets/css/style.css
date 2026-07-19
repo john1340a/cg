@@ -1,0 +1,199 @@
+/* ============================================================
+   Feuille de style commune — Bourses aux Minéraux
+   Direction artistique alignée sur mineralogique.com :
+   noir & blanc éditorial + accent jaune doré (#FFC800),
+   titres Montserrat (légers, lettres espacées), texte Roboto.
+   Mobile-first, responsive.
+   ============================================================ */
+
+:root {
+    /* Palette DA mineralogique.com */
+    --noir: #1b1b1b;            /* texte principal / header */
+    --noir-pur: #000000;        /* boutons */
+    --or: #ffc800;              /* accent signature (jaune doré) */
+    --or-fonce: #e6b400;        /* survol accent */
+    --blanc: #ffffff;
+    --gris-fond: #f7f7f5;
+    --gris-bord: #e3e3e0;
+    --gris-texte: #1b1b1b;
+    --gris-doux: #6c6c6c;
+    --rouge: #cf2e2e;
+    --vert: #2e7d32;
+
+    --rayon: 3px;               /* angles sobres, comme le site */
+    --ombre: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+    --largeur-max: 980px;
+
+    --police-titre: 'Montserrat', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --police-texte: 'Roboto', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: var(--police-texte);
+    color: var(--gris-texte);
+    background: var(--blanc);
+    line-height: 1.55;
+    font-weight: 400;
+}
+
+a { color: var(--noir); text-decoration-color: var(--or); }
+a:hover { color: var(--or-fonce); }
+
+/* --- En-tête (noir, comme le site) --- */
+.entete {
+    background: var(--noir-pur);
+    color: #fff;
+    padding: .9rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+.entete a { color: #fff; text-decoration: none; }
+.entete .marque {
+    font-family: var(--police-titre);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: .04em;
+}
+.entete .marque::first-letter { color: var(--or); }
+.entete nav a {
+    margin-left: 1.25rem;
+    font-size: .82rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+.entete nav a:hover { color: var(--or); }
+
+/* --- Conteneur --- */
+.conteneur {
+    max-width: var(--largeur-max);
+    margin: 1.75rem auto;
+    padding: 0 1.25rem;
+}
+.carte-panneau {
+    background: #fff;
+    border: 1px solid var(--gris-bord);
+    border-radius: var(--rayon);
+    box-shadow: var(--ombre);
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+}
+
+/* --- Titres (Montserrat, légers, espacés — style éditorial) --- */
+h1, h2, h3 { font-family: var(--police-titre); color: var(--noir); }
+h1 {
+    font-size: 1.9rem;
+    font-weight: 300;
+    letter-spacing: .04em;
+    margin: 0 0 1rem;
+}
+h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    margin: 0 0 .75rem;
+}
+
+/* --- Formulaires --- */
+.champ { margin-bottom: 1rem; }
+.champ label { display: block; font-weight: 600; margin-bottom: .3rem; font-size: .92rem; }
+.champ .aide { font-size: .82rem; color: var(--gris-doux); margin-top: .2rem; }
+input[type=text], input[type=email], input[type=password],
+input[type=date], input[type=url], input[type=file], textarea, select {
+    width: 100%;
+    padding: .6rem .7rem;
+    border: 1px solid var(--gris-bord);
+    border-radius: var(--rayon);
+    font-size: 1rem;
+    font-family: inherit;
+    background: #fff;
+    color: var(--noir);
+}
+textarea { resize: vertical; min-height: 80px; }
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid var(--or);
+    outline-offset: 0;
+    border-color: var(--noir);
+}
+
+.groupe-cases { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; }
+.case { display: flex; align-items: center; gap: .4rem; font-weight: 400; }
+.case input { width: auto; }
+.case input[type=checkbox] { accent-color: var(--noir-pur); }
+.ligne-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 560px) { .ligne-2 { grid-template-columns: 1fr; } }
+
+/* --- Boutons (noir + texte jaune, comme le site) --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .65rem 1.2rem;
+    border: 1px solid var(--noir-pur);
+    border-radius: var(--rayon);
+    background: var(--noir-pur);
+    color: var(--or);
+    font-family: var(--police-titre);
+    font-size: .92rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+}
+.btn:hover { background: #2a2a2a; color: var(--or); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn.secondaire {
+    background: #fff; color: var(--noir);
+    border: 1px solid var(--noir-pur);
+}
+.btn.secondaire:hover { background: var(--noir-pur); color: var(--or); }
+.btn.danger { background: var(--rouge); border-color: var(--rouge); color: #fff; }
+.btn.danger:hover { background: #a71f1f; color: #fff; }
+.btn.petit { padding: .38rem .75rem; font-size: .78rem; }
+
+/* --- Alertes --- */
+.alerte { padding: .8rem 1rem; border-radius: var(--rayon); margin-bottom: 1rem; font-size: .95rem; }
+.alerte.succes { background: #edf7ed; color: #1e5620; border: 1px solid #b7dbb8; border-left: 4px solid var(--vert); }
+.alerte.erreur { background: #fdeceb; color: #8f221d; border: 1px solid #f3c4c1; border-left: 4px solid var(--rouge); }
+.alerte.info   { background: #fff8e1; color: #7a5c00; border: 1px solid #f3e2a3; border-left: 4px solid var(--or); }
+.champ-erreur { color: var(--rouge); font-size: .82rem; margin-top: .25rem; }
+
+/* --- Badges de statut --- */
+.badge {
+    display: inline-block; padding: .2rem .6rem; border-radius: 999px;
+    font-size: .76rem; font-weight: 600; font-family: var(--police-titre);
+    letter-spacing: .02em;
+}
+.badge.brouillon { background: #ececec; color: #444; }
+.badge.en_attente_paiement { background: #fff3cd; color: #8a6d00; }
+.badge.en_attente_validation { background: #e8eefc; color: #274690; }
+.badge.publie { background: #e6f4ea; color: #1e7a34; }
+.badge.rejete { background: #fdeceb; color: #b3261e; }
+
+/* --- Tableaux --- */
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: .6rem .5rem; border-bottom: 1px solid var(--gris-bord); font-size: .92rem; }
+th { color: var(--gris-doux); font-weight: 600; font-family: var(--police-titre); text-transform: uppercase; font-size: .78rem; letter-spacing: .04em; }
+
+/* --- Mini-carte de géocodage --- */
+.mini-carte { height: 260px; border-radius: var(--rayon); overflow: hidden; border: 1px solid var(--gris-bord); }
+
+/* --- Liens accent --- */
+hr { border: none; border-top: 1px solid var(--gris-bord); margin: 1.25rem 0; }
+.centre { text-align: center; }
+.muet { color: var(--gris-doux); }
+.espace { margin-top: 1rem; }
+.masque { display: none !important; }
+strong { font-weight: 700; }
+
+/* --- Accroche accent type "LE MAG" --- */
+.accent-or { color: var(--or-fonce); font-family: var(--police-titre); font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; }

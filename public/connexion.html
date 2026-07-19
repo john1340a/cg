@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion — Bourses aux Minéraux</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Bourses aux Minéraux</a>
+        <nav><a href="/carte.html">Voir la carte</a></nav>
+    </header>
+
+    <main class="conteneur" style="max-width:460px;">
+        <div id="alerte"></div>
+
+        <!-- Connexion -->
+        <section id="bloc-connexion" class="carte-panneau">
+            <h1>Connexion</h1>
+            <form id="form-connexion" novalidate>
+                <div class="champ">
+                    <label for="c-email">Adresse email</label>
+                    <input type="email" id="c-email" required autocomplete="email">
+                </div>
+                <div class="champ">
+                    <label for="c-mdp">Mot de passe</label>
+                    <input type="password" id="c-mdp" required autocomplete="current-password">
+                </div>
+                <button class="btn" type="submit">Se connecter</button>
+                <p class="espace"><a href="#" id="lien-oubli">Mot de passe oublié ?</a></p>
+            </form>
+            <hr>
+            <p class="muet">Pas encore de compte ?
+                <a href="#" id="lien-inscription">Créer un compte organisateur</a></p>
+        </section>
+
+        <!-- Inscription -->
+        <section id="bloc-inscription" class="carte-panneau masque">
+            <h1>Créer un compte</h1>
+            <form id="form-inscription" novalidate>
+                <div class="ligne-2">
+                    <div class="champ">
+                        <label for="i-prenom">Prénom</label>
+                        <input type="text" id="i-prenom" required autocomplete="given-name">
+                    </div>
+                    <div class="champ">
+                        <label for="i-nom">Nom</label>
+                        <input type="text" id="i-nom" required autocomplete="family-name">
+                    </div>
+                </div>
+                <div class="champ">
+                    <label for="i-email">Adresse email</label>
+                    <input type="email" id="i-email" required autocomplete="email">
+                    <p class="aide">Si votre email est celui d'un abonné à la revue,
+                        votre première annonce sera gratuite.</p>
+                </div>
+                <div class="champ">
+                    <label for="i-mdp">Mot de passe</label>
+                    <input type="password" id="i-mdp" required minlength="8" autocomplete="new-password">
+                    <p class="aide">8 caractères minimum.</p>
+                </div>
+                <p class="aide">En créant un compte, vous acceptez notre
+                    <a href="/confidentialite.html" target="_blank">politique de confidentialité</a>.</p>
+                <button class="btn" type="submit">Créer mon compte</button>
+                <p class="espace"><a href="#" id="lien-retour-connexion">← Retour à la connexion</a></p>
+            </form>
+        </section>
+
+        <!-- Mot de passe oublié -->
+        <section id="bloc-oubli" class="carte-panneau masque">
+            <h1>Mot de passe oublié</h1>
+            <form id="form-oubli" novalidate>
+                <div class="champ">
+                    <label for="o-email">Adresse email</label>
+                    <input type="email" id="o-email" required autocomplete="email">
+                </div>
+                <button class="btn" type="submit">Envoyer le lien de réinitialisation</button>
+                <p class="espace"><a href="#" id="lien-retour-connexion2">← Retour à la connexion</a></p>
+            </form>
+        </section>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
+</body>
+</html>

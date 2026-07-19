@@ -1,0 +1,23 @@
+{
+    "name": "jks-consulting/bourses-mineraux",
+    "description": "Calendrier cartographique des bourses aux minéraux en France (MINERALOGIQUE)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-gd": "*",
+        "ext-json": "*",
+        "ext-fileinfo": "*",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

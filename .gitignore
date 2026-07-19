@@ -1,0 +1,16 @@
+# Secrets & configuration locale
+.env
+
+# Dépendances
+/vendor/
+
+# Fichiers générés / uploads / logs
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Système
+.DS_Store
+Thumbs.db
+*.log

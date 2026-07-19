@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administration — Utilisateurs</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Administration</a>
+        <nav>
+            <a href="/admin/">Modération</a>
+            <a href="/admin/abonnes.html">Abonnés</a>
+            <a href="/admin/utilisateurs.html">Utilisateurs</a>
+            <a href="/admin/parametres.html">Paramètres</a>
+            <a href="#" id="lien-deconnexion">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="conteneur">
+        <div id="alerte"></div>
+        <div class="carte-panneau">
+            <h1>Utilisateurs</h1>
+            <div id="liste-users" style="overflow-x:auto;"><p class="muet">Chargement…</p></div>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initUtilisateurs());</script>
+</body>
+</html>

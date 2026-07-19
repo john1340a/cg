@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administration — Paramètres</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Administration</a>
+        <nav>
+            <a href="/admin/">Modération</a>
+            <a href="/admin/abonnes.html">Abonnés</a>
+            <a href="/admin/utilisateurs.html">Utilisateurs</a>
+            <a href="/admin/parametres.html">Paramètres</a>
+            <a href="#" id="lien-deconnexion">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="conteneur">
+        <div id="alerte"></div>
+        <form id="form-params" class="carte-panneau">
+            <h1>Paramètres</h1>
+
+            <div class="champ">
+                <label for="p-instructions">Instructions de paiement (email + écran)</label>
+                <textarea id="p-instructions" rows="8"></textarea>
+                <p class="aide">Coordonnées de virement / chèque affichées à l'organisateur non abonné.</p>
+            </div>
+            <div class="ligne-2">
+                <div class="champ">
+                    <label for="p-montant">Montant d'une annonce (€)</label>
+                    <input type="text" id="p-montant">
+                </div>
+                <div class="champ">
+                    <label for="p-expediteur">Email expéditeur</label>
+                    <input type="email" id="p-expediteur">
+                </div>
+            </div>
+            <div class="ligne-2">
+                <div class="champ">
+                    <label for="p-nom-expediteur">Nom expéditeur</label>
+                    <input type="text" id="p-nom-expediteur">
+                </div>
+                <div class="champ">
+                    <label for="p-iframe">Domaine autorisé pour l'iframe</label>
+                    <input type="text" id="p-iframe" placeholder="https://www.mineralogique.fr">
+                    <p class="aide">Domaine WordPress autorisé à intégrer la carte. Vide = tous.</p>
+                </div>
+            </div>
+
+            <button class="btn" type="submit">Enregistrer</button>
+        </form>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initParametres());</script>
+</body>
+</html>

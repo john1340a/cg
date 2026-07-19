@@ -1,0 +1,32 @@
+# ============================================================
+#  Réécriture Apache — toutes les requêtes non-fichier passent
+#  par index.php (front controller). Adapté à l'hébergement
+#  mutualisé alwaysdata (Apache + mod_rewrite).
+# ============================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # embed.html doit passer par PHP (en-tête CSP frame-ancestors dynamique),
+    # même si le fichier existe → on force son routage vers index.php.
+    RewriteRule ^embed\.html$ index.php [QSA,L]
+
+    # Ne pas réécrire les autres fichiers et dossiers réellement existants
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Tout le reste -> index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Empêcher l'accès direct à d'éventuels fichiers sensibles
+<FilesMatch "\.(env|sql|md|json|lock)$">
+    Require all denied
+</FilesMatch>
+
+# Sécurité de base
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Annonce — Bourses aux Minéraux</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/vendor/maplibre-gl.css">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header class="entete">
+        <a href="/" class="marque">◆ Bourses aux Minéraux</a>
+        <nav>
+            <a href="/compte/">Mon espace</a>
+            <a href="#" id="lien-deconnexion">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="conteneur">
+        <div id="alerte"></div>
+        <form id="form-annonce" class="carte-panneau" novalidate>
+            <h1 id="titre-page">Nouvelle annonce</h1>
+
+            <!-- Intitulé + édition -->
+            <div class="ligne-2">
+                <div class="champ">
+                    <label for="intitule">Intitulé de l'événement *</label>
+                    <input type="text" id="intitule" maxlength="200" required>
+                </div>
+                <div class="champ">
+                    <label for="edition_num">N° d'édition</label>
+                    <input type="text" id="edition_num" maxlength="20" placeholder="ex. 53">
+                </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="ligne-2">
+                <div class="champ">
+                    <label for="date_debut">Date (du) *</label>
+                    <input type="date" id="date_debut" required>
+                </div>
+                <div class="champ">
+                    <label for="date_fin">Date (au) *</label>
+                    <input type="date" id="date_fin" required>
+                </div>
+            </div>
+
+            <!-- Type d'événement -->
+            <div class="champ">
+                <label>Type d'événement * <span class="aide">(les deux sont possibles)</span></label>
+                <div class="groupe-cases">
+                    <label class="case"><input type="checkbox" id="type_echanges"> Bourse d'échanges</label>
+                    <label class="case"><input type="checkbox" id="type_vente"> Bourse de vente</label>
+                </div>
+            </div>
+
+            <!-- Catégories -->
+            <div class="champ">
+                <label>Catégories * <span class="aide">(au moins une)</span></label>
+                <div class="groupe-cases">
+                    <label class="case"><input type="checkbox" id="cat_mineraux"> Minéraux</label>
+                    <label class="case"><input type="checkbox" id="cat_fossiles"> Fossiles</label>
+                    <label class="case"><input type="checkbox" id="cat_gemmes"> Gemmes / bijoux</label>
+                    <label class="case"><input type="checkbox" id="cat_esoterisme"> Ésotérisme (lithothérapie)</label>
+                </div>
+            </div>
+
+            <!-- Adresse + géocodage -->
+            <div class="champ">
+                <label for="adresse">Adresse de l'événement *</label>
+                <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                    <input type="text" id="adresse" maxlength="300" required
+                           placeholder="ex. Salle Polyvalente, Place du Foirail, 81120 Réalmont"
+                           style="flex:1; min-width:220px;">
+                    <button type="button" class="btn secondaire" id="btn-geocoder">Localiser</button>
+                </div>
+                <p class="aide" id="geo-statut"></p>
+            </div>
+
+            <!-- Mini-carte d'ajustement -->
+            <div class="champ">
+                <label>Position sur la carte
+                    <span class="aide">(déplacez le marqueur pour ajuster si besoin)</span></label>
+                <div id="mini-carte" class="mini-carte"></div>
+                <input type="hidden" id="lon"><input type="hidden" id="lat">
+            </div>
+
+            <!-- Infos pratiques -->
+            <div class="champ">
+                <label for="tarif">Tarif d'entrée</label>
+                <input type="text" id="tarif" maxlength="100" placeholder="ex. 2 €, gratuit…">
+            </div>
+            <div class="champ">
+                <label for="contact_email">Email de contact visible sur l'annonce *</label>
+                <input type="email" id="contact_email" required>
+            </div>
+            <div class="champ">
+                <label for="site_web">Site web</label>
+                <input type="url" id="site_web" placeholder="https://…">
+            </div>
+
+            <!-- Affiche -->
+            <div class="champ">
+                <label for="affiche">Image d'affiche</label>
+                <input type="file" id="affiche" accept="image/jpeg,image/png,image/webp">
+                <p class="aide">JPG, PNG ou WEBP — 5 Mo maximum. L'image est redimensionnée automatiquement.</p>
+                <div id="apercu-affiche" class="espace"></div>
+            </div>
+
+            <p class="aide">Les champs marqués * sont obligatoires. Seul l'email « de contact »
+                sera visible publiquement sur la carte. Vos nom, prénom et email de compte
+                restent privés. En savoir plus :
+                <a href="/confidentialite.html" target="_blank">politique de confidentialité</a>.</p>
+
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <button type="submit" class="btn" id="btn-enregistrer">Enregistrer (brouillon)</button>
+                <a href="/compte/" class="btn secondaire">Annuler</a>
+            </div>
+        </form>
+    </main>
+
+    <script src="/assets/vendor/maplibre-gl.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/annonce.js"></script>
+</body>
+</html>

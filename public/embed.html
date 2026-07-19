@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Carte des bourses aux minéraux</title>
+    <link rel="stylesheet" href="/assets/vendor/maplibre-gl.css">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/carte.css">
+    <style>
+        /* Mode embed : pas d'en-tête, la carte occupe tout le cadre. */
+        body.page-carte { height: 100vh; }
+        .carte-layout { height: 100vh; }
+    </style>
+</head>
+<body class="page-carte">
+    <div class="carte-layout">
+        <!-- Panneau latéral compact -->
+        <aside class="panneau" id="panneau">
+            <button class="btn secondaire petit bascule-panneau" id="bascule-panneau"
+                    aria-expanded="true">Filtres ▾</button>
+            <div class="panneau-contenu" id="panneau-contenu">
+                <h2 style="margin-top:0;">Filtres</h2>
+                <div class="champ">
+                    <label for="f-mois">Mois</label>
+                    <select id="f-mois"><option value="">Tous les mois</option></select>
+                </div>
+                <div class="champ">
+                    <label for="f-categorie">Catégorie</label>
+                    <select id="f-categorie">
+                        <option value="">Toutes</option>
+                        <option value="mineraux">Minéraux</option>
+                        <option value="fossiles">Fossiles</option>
+                        <option value="gemmes">Gemmes / bijoux</option>
+                        <option value="esoterisme">Ésotérisme / lithothérapie</option>
+                    </select>
+                </div>
+                <div class="champ">
+                    <label for="f-type">Type</label>
+                    <select id="f-type">
+                        <option value="">Tous</option>
+                        <option value="echanges">Bourse d'échanges</option>
+                        <option value="vente">Bourse de vente</option>
+                    </select>
+                </div>
+                <div class="champ case">
+                    <input type="checkbox" id="f-passes">
+                    <label for="f-passes" style="margin:0;">Événements passés</label>
+                </div>
+                <!-- Champs de période masqués mais présents pour carte.js -->
+                <input type="hidden" id="f-debut"><input type="hidden" id="f-fin">
+                <button class="btn secondaire petit" id="btn-reset">Réinitialiser</button>
+                <hr>
+                <h2>Événements <span id="compteur" class="muet"></span></h2>
+                <div id="liste-events" class="liste-events"><p class="muet">Chargement…</p></div>
+                <p class="aide espace"><a href="/carte.html" target="_blank" rel="noopener">Ouvrir en plein écran ↗</a></p>
+            </div>
+        </aside>
+
+        <div class="carte-zone">
+            <div id="carte"></div>
+            <div class="legende" id="legende"></div>
+            <div class="selecteur-fond">
+                <label for="fond">Fond :</label>
+                <select id="fond">
+                    <option value="osm">Plan</option>
+                    <option value="clair">Clair</option>
+                    <option value="satellite">Satellite</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="modale-affiche masque" id="modale-affiche">
+        <div class="modale-fond" id="modale-fond"></div>
+        <img id="modale-img" alt="Affiche de l'événement">
+    </div>
+
+    <script src="/assets/vendor/maplibre-gl.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/carte.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initCarte({ embed: true }));</script>
+</body>
+</html>
