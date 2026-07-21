@@ -50,9 +50,27 @@ final class Env
 
     /**
      * Récupère une valeur de configuration (avec valeur par défaut).
+     *
+     * Ordre de priorité :
+     *   1. variables d'environnement réelles (getenv / $_SERVER / $_ENV),
+     *      ex. définies dans l'interface alwaysdata ;
+     *   2. fichier .env (repli pratique en développement local).
      */
     public static function get(string $key, ?string $default = null): ?string
     {
+        // 1. Variable d'environnement système (prioritaire).
+        $env = getenv($key);
+        if ($env === false && array_key_exists($key, $_SERVER)) {
+            $env = $_SERVER[$key];
+        }
+        if ($env === false && array_key_exists($key, $_ENV)) {
+            $env = $_ENV[$key];
+        }
+        if ($env !== false && $env !== null) {
+            return (string) $env;
+        }
+
+        // 2. Repli : fichier .env
         self::load();
         return self::$data[$key] ?? $default;
     }

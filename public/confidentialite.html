@@ -8,55 +8,126 @@
     <link rel="stylesheet" href="/assets/css/fonts.css">
     <link rel="stylesheet" href="/assets/css/icons.css">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        /* Page confidentialité : mise en page éditoriale, dans la DA */
+        .conf-hero {
+            background: var(--noir-pur);
+            color: #fff;
+            padding: 3rem 1.25rem 2.5rem;
+        }
+        .conf-hero .conteneur { margin: 0 auto; }
+        .conf-hero h1 { color: #fff; margin-bottom: .5rem; }
+        .conf-hero p { color: #cfcfcf; max-width: 640px; margin: 0; }
+        .conf-hero .accent-or { display: block; margin-bottom: 1rem; font-size: .78rem; }
+
+        .conf-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .conf-carte {
+            background: #fff;
+            border: 1px solid var(--gris-bord);
+            border-radius: var(--rayon);
+            box-shadow: var(--ombre);
+            padding: 1.5rem;
+        }
+        .conf-carte h2 {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            font-size: 1.05rem;
+            margin-bottom: .6rem;
+        }
+        .conf-carte h2 .msi {
+            font-size: 1.4rem;
+            color: var(--or-fonce);
+        }
+        .conf-carte p, .conf-carte ul { margin: 0 0 .5rem; font-size: .94rem; }
+        .conf-carte ul { padding-left: 1.1rem; }
+        .conf-carte li { margin-bottom: .35rem; }
+        .conf-carte:last-child p:last-child { margin-bottom: 0; }
+        .conf-large { grid-column: 1 / -1; }
+    </style>
 </head>
 <body>
     <header class="entete">
         <a href="/" class="marque"><span class="msi" aria-hidden="true">diamond</span> Bourses aux Minéraux</a>
-        <nav><a href="/carte.html">Carte</a></nav>
+        <nav>
+            <a href="/carte.html">Carte</a>
+            <a href="/compte/">Espace organisateur</a>
+        </nav>
     </header>
 
-    <main class="conteneur">
-        <div class="carte-panneau">
+    <section class="conf-hero">
+        <div class="conteneur" style="margin:0 auto;">
+            <span class="accent-or">Protection des données</span>
             <h1>Politique de confidentialité</h1>
-            <p class="muet"><em>Document type à compléter par l'éditeur (MINERALOGIQUE)
-               avant mise en production.</em></p>
-
-            <h2>Responsable du traitement</h2>
-            <p>MINERALOGIQUE — 90 Cours de l'Yser, 33800 Bordeaux.
-               Contact : <a href="mailto:contact@mineralogique.fr">contact@mineralogique.fr</a>.</p>
-
-            <h2>Données collectées</h2>
-            <ul>
-                <li><strong>Compte organisateur</strong> : nom, prénom, email, mot de passe (chiffré).</li>
-                <li><strong>Annonces</strong> : intitulé, dates, adresse de l'événement, tarif,
-                    email de contact, site web, affiche.</li>
-            </ul>
-
-            <h2>Données rendues publiques</h2>
-            <p>Sur la carte publique, seules les informations de l'annonce sont visibles :
-               intitulé, dates, adresse de l'événement, tarif, catégories, type, ainsi que
-               <strong>l'email de contact que vous avez explicitement désigné comme « visible »</strong>
-               et le site web éventuel. Votre nom, prénom et email de compte ne sont jamais publiés.</p>
-
-            <h2>Finalités</h2>
-            <p>Gestion des comptes organisateurs, publication des annonces validées,
-               envoi d'emails transactionnels (confirmation, paiement, validation, rejet,
-               réinitialisation de mot de passe).</p>
-
-            <h2>Hébergement</h2>
-            <p>Les données sont hébergées en France (alwaysdata.net).</p>
-
-            <h2>Durée de conservation</h2>
-            <p>Les données de compte sont conservées tant que le compte est actif.
-               À compléter selon la politique de l'éditeur.</p>
-
-            <h2>Vos droits</h2>
-            <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification,
-               d'effacement et d'opposition. Pour l'exercer, contactez l'éditeur à l'adresse
-               ci-dessus.</p>
-
-            <p class="espace"><a class="btn secondaire" href="/">Retour à l'accueil</a></p>
+            <p>Nous ne collectons que les données nécessaires à la publication de votre
+               annonce et à la gestion de votre compte organisateur. Aucune donnée n'est
+               revendue ni cédée à des tiers.</p>
         </div>
+    </section>
+
+    <main class="conteneur">
+        <div class="conf-sections">
+
+            <div class="conf-carte">
+                <h2><span class="msi" aria-hidden="true">apartment</span> Responsable du traitement</h2>
+                <p>MINERALOGIQUE — 90 Cours de l'Yser, 33800 Bordeaux.</p>
+                <p>Contact : <a href="mailto:contact@mineralogique.com">contact@mineralogique.com</a></p>
+            </div>
+
+            <div class="conf-carte">
+                <h2><span class="msi" aria-hidden="true">database</span> Données collectées</h2>
+                <ul>
+                    <li><strong>Compte organisateur</strong> : nom, prénom, email, mot de passe (chiffré).</li>
+                    <li><strong>Annonces</strong> : intitulé, dates, adresse de l'événement, tarif,
+                        email de contact, site web, affiche.</li>
+                </ul>
+            </div>
+
+            <div class="conf-carte">
+                <h2><span class="msi" aria-hidden="true">public</span> Données publiques</h2>
+                <p>Sur la carte, seules les informations de l'annonce sont visibles : intitulé,
+                   dates, adresse, tarif, catégories, type, l'email de contact
+                   <strong>que vous désignez comme « visible »</strong> et le site web éventuel.</p>
+                <p>Votre nom, prénom et email de compte ne sont <strong>jamais</strong> publiés.</p>
+            </div>
+
+            <div class="conf-carte">
+                <h2><span class="msi" aria-hidden="true">flag</span> Finalités</h2>
+                <p>Gestion des comptes organisateurs, publication des annonces validées et envoi
+                   d'emails transactionnels (confirmation, paiement, validation, rejet,
+                   réinitialisation de mot de passe).</p>
+            </div>
+
+            <div class="conf-carte">
+                <h2><span class="msi" aria-hidden="true">dns</span> Hébergement</h2>
+                <p>Les données sont hébergées en France (alwaysdata.net).</p>
+            </div>
+
+            <div class="conf-carte">
+                <h2><span class="msi" aria-hidden="true">schedule</span> Conservation</h2>
+                <p>Les données de compte sont conservées tant que le compte est actif. Vous pouvez
+                   demander la suppression de votre compte à tout moment.</p>
+            </div>
+
+            <div class="conf-carte conf-large">
+                <h2><span class="msi" aria-hidden="true">gavel</span> Vos droits (RGPD)</h2>
+                <p>Conformément au Règlement général sur la protection des données, vous disposez
+                   d'un droit d'accès, de rectification, d'effacement et d'opposition sur vos données.
+                   Pour l'exercer, contactez l'éditeur à
+                   <a href="mailto:contact@mineralogique.com">contact@mineralogique.com</a>.</p>
+            </div>
+
+        </div>
+
+        <p class="espace"><a class="btn secondaire" href="/"><span class="msi" aria-hidden="true">arrow_back</span> Retour à l'accueil</a></p>
     </main>
+
+    <footer class="conteneur muet" style="padding-bottom:2rem;">
+        <p>Données hébergées en France.</p>
+    </footer>
 </body>
 </html>

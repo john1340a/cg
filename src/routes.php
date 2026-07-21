@@ -17,8 +17,17 @@ use App\Controllers\UploadController;
 use App\Controllers\AdminController;
 use App\Controllers\SubscriberController;
 use App\Controllers\EmbedController;
+use App\Controllers\PageController;
 
 return static function (Router $r): void {
+
+    // ------------------------------------------------------------
+    //  Pages HTML servies par le routeur (indépendant du
+    //  DirectoryIndex de l'hébergeur : « / », « /compte », « /admin »)
+    // ------------------------------------------------------------
+    $r->get('/',         [new PageController(), 'accueil']);
+    $r->get('/compte',   [new PageController(), 'compte']);
+    $r->get('/admin',    [new PageController(), 'admin']);
 
     // ------------------------------------------------------------
     //  Utilitaire : jeton CSRF pour le frontend

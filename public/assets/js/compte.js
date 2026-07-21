@@ -91,6 +91,33 @@ function carteAnnonce(ev) {
     infos.textContent = `Du ${ev.date_debut} au ${ev.date_fin} — ${ev.adresse}`;
     bloc.appendChild(infos);
 
+    // Aperçu de l'affiche uploadée (visible dès le brouillon, avant publication)
+    if (ev.affiche_path) {
+        const img = document.createElement('img');
+        img.src = '/api/affiche/' + encodeURIComponent(ev.affiche_path);
+        img.alt = 'Affiche : ' + ev.intitule;
+        img.loading = 'lazy';
+        img.style.cssText = 'max-width:160px;max-height:200px;border-radius:6px;'
+            + 'border:1px solid var(--gris-bord);margin:.5rem 0;display:block;';
+        bloc.appendChild(img);
+    }
+
+    // Rappel : une annonce non publiée n'apparaît pas sur la carte publique.
+    if (ev.statut === 'brouillon') {
+        const info = document.createElement('p');
+        info.className = 'alerte info';
+        info.textContent = 'Cette annonce est un brouillon : elle n\'apparaît pas encore sur '
+            + 'la carte. Cliquez sur « Soumettre » pour lancer sa publication.';
+        bloc.appendChild(info);
+    }
+    if (ev.statut === 'en_attente_validation') {
+        const info = document.createElement('p');
+        info.className = 'alerte info';
+        info.textContent = 'Annonce soumise : en attente de validation par l\'équipe. '
+            + 'Elle apparaîtra sur la carte une fois validée.';
+        bloc.appendChild(info);
+    }
+
     if (ev.statut === 'rejete' && ev.motif_rejet) {
         const motif = document.createElement('p');
         motif.className = 'alerte erreur';

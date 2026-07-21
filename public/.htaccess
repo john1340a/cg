@@ -4,6 +4,10 @@
 #  mutualisé alwaysdata (Apache + mod_rewrite).
 # ============================================================
 
+# Ne pas laisser Apache servir index.php / index.html automatiquement :
+# c'est le front controller (via la réécriture ci-dessous) qui décide.
+DirectoryIndex disabled
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
@@ -11,12 +15,16 @@
     # même si le fichier existe → on force son routage vers index.php.
     RewriteRule ^embed\.html$ index.php [QSA,L]
 
-    # Ne pas réécrire les autres fichiers et dossiers réellement existants
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
+    # Servir directement les vrais FICHIERS existants (assets, images,
+    # polices, favicon…), sans passer par PHP.
+    # NB : on ne teste PAS -d (répertoire) : les dossiers comme /compte/
+    # ou /admin/ doivent être routés vers index.php (sinon Apache renvoie
+    # 403, le DirectoryIndex étant désactivé). Leurs routes sont gérées
+    # par PageController.
+    RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule ^ - [L]
 
-    # Tout le reste -> index.php
+    # Tout le reste (racine, dossiers, routes API) -> index.php
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
 

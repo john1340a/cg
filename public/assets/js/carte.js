@@ -75,27 +75,87 @@ function initCarte(options = {}) {
     brancherBasculePanneau();
 }
 
+/* ---------- Marqueurs : pins « goutte » colorés par mois ---------- */
+/*
+ * On remplace les pastilles rondes par de vraies épingles cartographiques
+ * (plus parlantes) : forme goutte colorée selon le mois + petit losange
+ * blanc (minéral) à l'intérieur. Chaque pin est dessiné une fois sur un
+ * canvas puis enregistré comme image MapLibre « pin-1 »…« pin-12 ».
+ */
+const PIN_SCALE = 2;          // netteté sur écrans HiDPI
+const PIN_W = 26, PIN_H = 34; // dimensions logiques du pin
+
+function dessinerPin(couleur) {
+    const w = PIN_W * PIN_SCALE, h = PIN_H * PIN_SCALE;
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.scale(PIN_SCALE, PIN_SCALE);
+
+    const cx = PIN_W / 2, r = 10, cy = r + 1;
+
+    // Corps « goutte » : disque + pointe vers le bas
+    ctx.beginPath();
+    ctx.moveTo(cx, PIN_H - 1);                       // pointe basse
+    ctx.quadraticCurveTo(cx - r, cy + r * 0.9, cx - r, cy); // flanc gauche
+    ctx.arc(cx, cy, r, Math.PI, 0, false);            // demi-cercle haut
+    ctx.quadraticCurveTo(cx + r, cy + r * 0.9, cx, PIN_H - 1); // flanc droit
+    ctx.closePath();
+
+    ctx.fillStyle = couleur;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(0,0,0,.35)';
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetY = 1;
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.stroke();
+
+    // Losange blanc (minéral) au centre de la tête
+    const d = 4.2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - d);
+    ctx.lineTo(cx + d, cy);
+    ctx.lineTo(cx, cy + d);
+    ctx.lineTo(cx - d, cy);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,.95)';
+    ctx.fill();
+
+    return ctx.getImageData(0, 0, w, h);
+}
+
+/** (Ré)enregistre les 12 pins auprès de l'instance carte. */
+function enregistrerPins() {
+    for (let m = 1; m <= 12; m++) {
+        const id = 'pin-' + m;
+        if (carte.hasImage(id)) continue;
+        carte.addImage(id, dessinerPin(COULEURS_MOIS[m]), { pixelRatio: PIN_SCALE });
+    }
+}
+
 /* ---------- Source et couches de marqueurs ---------- */
 function ajouterSourceEtCouches() {
+    enregistrerPins();
+
     carte.addSource('events', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
     });
 
-    // Expression MapLibre : couleur selon la propriété "mois"
-    const couleurParMois = ['match', ['get', 'mois']];
-    for (let m = 1; m <= 12; m++) { couleurParMois.push(m, COULEURS_MOIS[m]); }
-    couleurParMois.push('#666'); // défaut
+    // Choix du pin selon le mois (défaut : décembre si valeur inattendue)
+    const pinParMois = ['concat', 'pin-', ['to-string', ['get', 'mois']]];
 
     carte.addLayer({
         id: 'points',
-        type: 'circle',
+        type: 'symbol',
         source: 'events',
-        paint: {
-            'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 5, 10, 9],
-            'circle-color': couleurParMois,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#fff',
+        layout: {
+            'icon-image': pinParMois,
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 4, 0.75, 10, 1.05],
+            'icon-anchor': 'bottom',
+            'icon-allow-overlap': true,
         },
     });
 
@@ -332,10 +392,10 @@ function brancherSelecteurFond() {
     if (!sel) return;
     sel.addEventListener('change', () => {
         carte.setStyle(styleFond(sel.value));
-        // Le changement de style supprime les couches → les recréer.
+        // Le changement de style supprime couches ET images → tout recréer.
         carte.once('styledata', () => {
             if (!carte.getSource('events')) {
-                ajouterSourceEtCouches();
+                ajouterSourceEtCouches(); // ré-enregistre aussi les pins
                 const src = carte.getSource('events');
                 if (src) src.setData({ type: 'FeatureCollection', features: dernieresFeatures });
             }

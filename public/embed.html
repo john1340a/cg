@@ -13,6 +13,12 @@
         /* Mode embed : pas d'en-tête, la carte occupe tout le cadre. */
         body.page-carte { height: 100vh; }
         .carte-layout { height: 100vh; }
+        /* Appel à l'action « Publier » bien visible en tête du panneau */
+        .embed-cta {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="page-carte">
@@ -22,6 +28,11 @@
             <button class="btn secondaire petit bascule-panneau" id="bascule-panneau"
                     aria-expanded="true">Filtres</button>
             <div class="panneau-contenu" id="panneau-contenu">
+                <a class="btn embed-cta" href="/compte/" target="_blank" rel="noopener">
+                    <span class="msi" aria-hidden="true">add_location_alt</span>
+                    Publier ma bourse
+                </a>
+                <p class="aide" style="margin:.4rem 0 1rem;">Vous organisez un salon&nbsp;? Ajoutez-le gratuitement au calendrier.</p>
                 <h2 style="margin-top:0;">Filtres</h2>
                 <div class="champ">
                     <label for="f-mois">Mois</label>

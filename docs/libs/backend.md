@@ -19,6 +19,12 @@ délèguent aux services, formatent la réponse JSON. **Aucune logique métier.*
 | `SubscriberController` | whitelist abonnés : liste, ajout, suppression, import CSV |
 | `UploadController` | sert les affiches stockées hors racine web (contrôle du type) |
 | `EmbedController` | sert `embed.html` avec l'en-tête CSP `frame-ancestors` |
+| `PageController` | sert les pages d'index (`/`, `/compte`, `/admin`) via le routeur |
+
+> **Routage de la racine** : `PageController` sert `index.html` pour `/`,
+> `/compte` et `/admin` **par le routeur**, sans dépendre du `DirectoryIndex`
+> d'Apache. Nécessaire car certains hébergements (alwaysdata) exécutent
+> `index.php` à la racine avant `index.html` — voir [`core.md`](core.md).
 
 ---
 

@@ -75,6 +75,11 @@ Ouvrir <http://127.0.0.1:8000>.
 En local, `MAIL_ENABLED=false` : les emails ne sont pas expédiés mais **écrits dans
 `storage/logs/mails/`** (pratique pour vérifier le contenu sans SMTP).
 
+> **Configuration** : `Core\Env` lit d'abord les **variables d'environnement**
+> réelles, puis le fichier `.env` en repli. En production (alwaysdata), la config
+> se fait donc via les variables d'environnement de l'hébergeur — **aucun `.env`
+> à déposer sur le serveur**. Voir [`docs/deploiement.md`](docs/deploiement.md).
+
 ---
 
 ## Documentation

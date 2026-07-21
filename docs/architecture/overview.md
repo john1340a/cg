@@ -29,7 +29,7 @@ public/               DOCUMENT ROOT (seul dossier exposé au web)
 src/                  code PHP hors document root (autoload PSR-4 « App\ »)
   Core/               Router, Database, Session, Csrf, Auth, RateLimiter,
                       Validator, Request, Response, App, Env
-  Controllers/        Auth, Event, Admin, Subscriber, Upload, Embed
+  Controllers/        Auth, Event, Admin, Subscriber, Upload, Embed, Page
   Services/           Auth, Event, Geocoding, Image, Mail
   Models/             User, Event, Subscriber, Payment, Setting
   routes.php          table des routes
@@ -77,6 +77,12 @@ PostgreSQL / PostGIS
 **Règle d'or** : jamais de logique métier dans les routes ni dans les modèles.
 Les contrôleurs ne parlent pas directement à *PDO* — ils passent par les
 services et les modèles.
+
+**Routage des pages** : les pages d'index (`/`, `/compte`, `/admin`) sont
+servies par le routeur via `PageController`, et non par le `DirectoryIndex`
+d'Apache. Le `public/.htaccess` désactive l'index automatique et force la
+racine vers `index.php` — comportement portable, indépendant de l'hébergeur
+(alwaysdata exécute `index.php` avant `index.html` à la racine).
 
 ### Injection légère
 

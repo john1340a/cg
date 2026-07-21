@@ -39,7 +39,7 @@ routage, base de données, session, sécurité.
 | Fichier | Rôle |
 |---------|------|
 | `App.php` | amorçage : chargement `.env`, session, gestion centralisée des erreurs, dispatch |
-| `Env.php` | lecteur de `.env` minimaliste (get / bool / int), sans dépendance |
+| `Env.php` | config (get / bool / int) : variables d'environnement prioritaires, repli sur `.env` |
 | `Database.php` | connexion **PDO singleton** (mode exceptions, fetch associatif, UTF-8) |
 | `Router.php` | routeur à segments dynamiques (`/api/events/{id}`), 405 si méthode invalide |
 | `Request.php` | requête HTTP (méthode, chemin, query, corps JSON, fichiers, IP) + surcharge `_method` |
@@ -65,6 +65,14 @@ intégré PHP (`cli-server`) et sert les fichiers réels + l'index de répertoir
 répliquant le comportement d'Apache (`DirectoryIndex`). `embed.html` est
 volontairement routé par PHP même s'il existe (pour l'en-tête CSP).
 
+**Routage de la racine et `.htaccess`** : en production (Apache), le
+`public/.htaccess` désactive le `DirectoryIndex` automatique et force la racine
+`/` à passer par `index.php`. Les pages d'index (`/`, `/compte`, `/admin`) sont
+alors servies par le routeur via `PageController` (voir
+[`backend.md`](backend.md)). Cette approche évite la dépendance au comportement
+`DirectoryIndex` de l'hébergeur, qui, sur alwaysdata, exécute `index.php` avant
+`index.html` à la racine.
+
 ---
 
 ## Dépendances
@@ -82,13 +90,23 @@ Prérequis plateforme déclarés : `php >=8.1`, `ext-pdo`, `ext-pdo_pgsql`,
 
 ## Configuration
 
-Toute la configuration passe par un fichier `.env` **non versionné** (modèle :
-[`.env.example`](../../.env.example)). Clés principales :
+`Core\Env` lit la configuration selon un **ordre de priorité** :
+
+1. les **variables d'environnement réelles** (`getenv()` / `$_SERVER` / `$_ENV`),
+   par exemple définies dans l'interface **alwaysdata** (production) ;
+2. à défaut, le fichier **`.env`** non versionné (modèle :
+   [`.env.example`](../../.env.example)), pratique en développement local.
+
+Ainsi, en production, aucun fichier `.env` n'est nécessaire : les secrets sont
+gérés côté hébergeur (variables d'environnement), ce qui évite de déposer des
+identifiants sur le disque.
+
+Clés principales :
 
 | Clé | Rôle |
 |-----|------|
 | `APP_ENV` | `local` / `production` (active HTTPS, masque les erreurs) |
-| `APP_URL` | URL publique de base |
+| `APP_URL` | URL publique de base (utilisée dans les liens des emails) |
 | `DB_*` | connexion PostgreSQL |
 | `MAIL_ENABLED`, `SMTP_*`, `MAIL_FROM*` | envoi d'emails (fichier si désactivé) |
 | `IFRAME_ALLOWED_ORIGINS` | domaine(s) autorisé(s) à intégrer l'iframe |

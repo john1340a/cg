@@ -10,6 +10,16 @@
 /storage/logs/*
 !/storage/logs/.gitkeep
 
+# Données personnelles — ne jamais versionner
+# Exports clients WooCommerce/WordPress, listes d'abonnés, CSV d'emails.
+*.csv
+wc-customers-report-export-*.csv
+
+# Documents sources / contractuels (non applicatifs)
+*.pdf
+*.docx
+prompt_claude_code_bourses_mineraux.md
+
 # Système
 .DS_Store
 Thumbs.db
