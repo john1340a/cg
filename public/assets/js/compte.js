@@ -70,14 +70,8 @@ function carteAnnonce(ev) {
     bloc.style.marginBottom = '.75rem';
 
     const titre = document.createElement('h2');
-    titre.textContent = ev.intitule;
-    if (ev.edition_num) {
-        const ed = document.createElement('span');
-        ed.className = 'muet';
-        ed.style.fontWeight = '400';
-        ed.textContent = `  (n°${ev.edition_num})`;
-        titre.appendChild(ed);
-    }
+    // Titre : « 53ème Vente de pierre » (édition en préfixe)
+    titre.textContent = titreAnnonce(ev);
     bloc.appendChild(titre);
 
     const badge = document.createElement('span');
@@ -88,7 +82,7 @@ function carteAnnonce(ev) {
     const infos = document.createElement('p');
     infos.className = 'muet';
     infos.style.marginTop = '.5rem';
-    infos.textContent = `Du ${ev.date_debut} au ${ev.date_fin} — ${ev.adresse}`;
+    infos.textContent = `${enteteDatesLieu(ev)} — ${ev.adresse}`;
     bloc.appendChild(infos);
 
     // Aperçu de l'affiche uploadée (visible dès le brouillon, avant publication)

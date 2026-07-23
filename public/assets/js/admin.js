@@ -61,7 +61,8 @@ function carteModeration(ev) {
     bloc.style.marginBottom = '.75rem';
 
     const h = document.createElement('h2');
-    h.textContent = ev.intitule + (ev.edition_num ? ` (n°${ev.edition_num})` : '');
+    // Titre façon revue : « 53ème Vente de pierre (ventes-échanges) »
+    h.textContent = titreAvecType(ev);
     bloc.appendChild(h);
 
     const badge = document.createElement('span');
@@ -69,10 +70,17 @@ function carteModeration(ev) {
     badge.textContent = LIBELLE[ev.statut] || ev.statut;
     bloc.appendChild(badge);
 
+    // En-tête « 17-19 juillet 2026, Millau (12) »
+    const entete = document.createElement('p');
+    entete.className = 'muet';
+    entete.style.marginTop = '.5rem';
+    entete.textContent = enteteDatesLieu(ev);
+    bloc.appendChild(entete);
+
+    // Adresse complète (salle / lieu)
     const meta = document.createElement('p');
     meta.className = 'muet';
-    meta.style.marginTop = '.5rem';
-    meta.textContent = `Du ${ev.date_debut} au ${ev.date_fin} — ${ev.adresse}`;
+    meta.textContent = ev.adresse;
     bloc.appendChild(meta);
 
     const org = document.createElement('p');

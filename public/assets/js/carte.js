@@ -205,19 +205,21 @@ function ouvrirPopup(feature) {
     const div = document.createElement('div');
     div.className = 'popup-event';
 
+    // Titre : « 53ème Vente de pierre » (édition en préfixe)
     const h3 = document.createElement('h3');
-    h3.textContent = p.intitule + (p.edition_num ? ` (n°${p.edition_num})` : '');
+    h3.textContent = titreAnnonce(p);
     div.appendChild(h3);
 
     const lignes = document.createElement('div');
     lignes.className = 'lignes';
-    lignes.appendChild(ligne('event', formatPeriode(p.date_debut, p.date_fin)));
-    lignes.appendChild(ligne('place', p.adresse));
+    // En-tête façon revue : « 17-19 juillet 2026, Millau (12) »
+    lignes.appendChild(ligne('event', enteteDatesLieu(p)));
+    // Lieu précis (salle / rue) SANS répéter la ville déjà dans l'en-tête.
+    const lieu = lieuSansVille(p.adresse);
+    if (lieu) lignes.appendChild(ligne('place', lieu));
     if (p.tarif) lignes.appendChild(ligne('local_activity', 'Entrée : ' + p.tarif));
-    const types = [];
-    if (p.type_echanges) types.push('Échanges');
-    if (p.type_vente) types.push('Vente');
-    if (types.length) lignes.appendChild(ligne('sell', types.join(' + ')));
+    const type = typeAnnonce(p);
+    if (type) lignes.appendChild(ligne('sell', type));
     div.appendChild(lignes);
 
     // Étiquettes de catégories
@@ -318,12 +320,12 @@ function majListe(features) {
 
         const t = document.createElement('div');
         t.className = 'titre';
-        t.textContent = p.intitule;
+        t.textContent = titreAnnonce(p);
         item.appendChild(t);
 
         const m = document.createElement('div');
         m.className = 'meta';
-        m.textContent = `${formatPeriode(p.date_debut, p.date_fin)} — ${p.adresse}`;
+        m.textContent = enteteDatesLieu(p);
         item.appendChild(m);
 
         item.addEventListener('click', () => {
@@ -439,11 +441,4 @@ function brancherBasculePanneau() {
 }
 
 /* ---------- Utilitaires ---------- */
-function formatPeriode(debut, fin) {
-    const f = (d) => {
-        const [a, m, j] = d.split('-');
-        return `${j}/${m}/${a}`;
-    };
-    return debut === fin ? f(debut) : `${f(debut)} → ${f(fin)}`;
-}
 function safeParse(s) { try { return JSON.parse(s); } catch (_) { return []; } }
