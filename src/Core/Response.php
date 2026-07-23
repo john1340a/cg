@@ -48,4 +48,27 @@ final class Response
         header('Location: ' . $url);
         exit;
     }
+
+    /**
+     * Émet un contenu texte en pièce jointe téléchargeable.
+     *
+     * @param string $contenu    corps du fichier (UTF-8)
+     * @param string $nomFichier nom proposé au téléchargement
+     * @param string $mime       type MIME (text/plain par défaut)
+     */
+    public static function download(
+        string $contenu,
+        string $nomFichier,
+        string $mime = 'text/plain'
+    ): never {
+        // Nettoie le nom pour l'en-tête (pas de saut de ligne ni de guillemet)
+        $nomFichier = preg_replace('/[\r\n"]+/', '', $nomFichier) ?? 'export.txt';
+        http_response_code(200);
+        header('Content-Type: ' . $mime . '; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $nomFichier . '"');
+        header('Content-Length: ' . (string) strlen($contenu));
+        header('Cache-Control: no-store');
+        echo $contenu;
+        exit;
+    }
 }

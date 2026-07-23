@@ -33,7 +33,45 @@ async function gardeAdmin() {
 async function initModeration() {
     if (!(await gardeAdmin())) return;
     el('f-statut').addEventListener('change', chargerModeration);
+    const exp = el('btn-export');
+    if (exp) exp.addEventListener('click', exporterAnnonces);
     await chargerModeration();
+}
+
+/**
+ * Télécharge l'export texte de toutes les annonces.
+ * Passe par fetch (cookie de session envoyé) pour gérer proprement
+ * une éventuelle erreur au lieu de télécharger un JSON d'erreur.
+ */
+async function exporterAnnonces() {
+    const btn = el('btn-export');
+    if (btn) btn.disabled = true;
+    try {
+        const res = await fetch('/api/admin/events/export', {
+            headers: { Accept: 'text/plain' },
+            credentials: 'same-origin',
+        });
+        if (!res.ok) throw new Error('Export impossible (' + res.status + ').');
+
+        const blob = await res.blob();
+        // Nom de fichier depuis Content-Disposition, sinon repli daté.
+        const cd = res.headers.get('Content-Disposition') || '';
+        const m = cd.match(/filename="?([^"]+)"?/);
+        const nom = m ? m[1] : 'bourses-mineraux.txt';
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nom;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    } catch (err) {
+        afficherAlerte('alerte', err.message);
+    } finally {
+        if (btn) btn.disabled = false;
+    }
 }
 
 async function chargerModeration() {
@@ -266,6 +304,7 @@ async function initParametres() {
         el('p-expediteur').value = settings.email_expediteur || '';
         el('p-nom-expediteur').value = settings.nom_expediteur || '';
         el('p-iframe').value = settings.iframe_domain || '';
+        el('p-lien-paiement').value = settings.lien_paiement || '';
     } catch (err) { afficherAlerte('alerte', err.message); }
 
     el('form-params').addEventListener('submit', async (e) => {
@@ -277,6 +316,7 @@ async function initParametres() {
                 email_expediteur: el('p-expediteur').value.trim(),
                 nom_expediteur: el('p-nom-expediteur').value.trim(),
                 iframe_domain: el('p-iframe').value.trim(),
+                lien_paiement: el('p-lien-paiement').value.trim(),
             });
             afficherAlerte('alerte', 'Paramètres enregistrés.', 'succes');
         } catch (err) { afficherAlerte('alerte', err.message); }

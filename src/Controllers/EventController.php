@@ -72,7 +72,15 @@ final class EventController
     {
         $user = Auth::requireUser();
         $rows = $this->events->findByOwner((int) $user['id']);
-        Response::ok(['events' => $rows]);
+        $settings = new \App\Models\SettingModel();
+        Response::ok([
+            'events'  => $rows,
+            // Infos de paiement en ligne pour les annonces en_attente_paiement.
+            'paiement' => [
+                'lien'    => $settings->get('lien_paiement', ''),
+                'montant' => $settings->get('montant_annonce', '10'),
+            ],
+        ]);
     }
 
     /**

@@ -13,13 +13,17 @@ const LIBELLE_STATUT = {
     rejete: 'Rejetée',
 };
 
+// Utilisateur courant (pour pré-remplir l'email au paiement WooCommerce).
+let utilisateurCourant = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await exigerAuth();
     if (!user) return;
+    utilisateurCourant = user;
 
     el('bienvenue').textContent = `Bonjour ${user.prenom}. `
         + (user.est_abonne ? 'Vous êtes abonné : votre première annonce est gratuite.'
-                           : 'Chaque annonce coûte 10 € (paiement hors ligne).');
+                           : 'Chaque annonce coûte 10 € pour être publiée.');
 
     // Un admin qui atterrit ici garde un accès direct au back-office.
     if (user.role === 'admin') {
@@ -46,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function chargerAnnonces() {
     const conteneur = el('liste-annonces');
     try {
-        const { events } = await API.get('/api/mes-annonces');
+        const { events, paiement } = await API.get('/api/mes-annonces');
         conteneur.textContent = '';
 
         if (!events.length) {
@@ -57,14 +61,31 @@ async function chargerAnnonces() {
             return;
         }
 
-        events.forEach((ev) => conteneur.appendChild(carteAnnonce(ev)));
+        events.forEach((ev) => conteneur.appendChild(carteAnnonce(ev, paiement)));
     } catch (err) {
         afficherAlerte('alerte', err.message);
     }
 }
 
+/**
+ * Construit l'URL de paiement WooCommerce en pré-remplissant l'email
+ * de l'organisateur (facilite le rapprochement manuel côté admin).
+ * @param {string} lien  URL de la fiche produit
+ * @param {string} email email de l'organisateur
+ * @returns {string}
+ */
+function urlPaiement(lien, email) {
+    try {
+        const u = new URL(lien);
+        if (email) u.searchParams.set('email', email);
+        return u.toString();
+    } catch (_) {
+        return lien; // URL mal formée : on renvoie tel quel
+    }
+}
+
 /** Construit le bloc d'une annonce (DOM sûr, sans innerHTML). */
-function carteAnnonce(ev) {
+function carteAnnonce(ev, paiement) {
     const bloc = document.createElement('div');
     bloc.className = 'carte-panneau';
     bloc.style.marginBottom = '.75rem';
@@ -119,10 +140,22 @@ function carteAnnonce(ev) {
         bloc.appendChild(motif);
     }
     if (ev.statut === 'en_attente_paiement') {
+        const lien = paiement && paiement.lien ? paiement.lien : '';
+        const montant = (paiement && paiement.montant) ? paiement.montant : '10';
+        const email = utilisateurCourant ? utilisateurCourant.email : '';
+
         const info = document.createElement('p');
         info.className = 'alerte info';
-        info.textContent = 'Un email d\'instructions de paiement vous a été envoyé. '
-            + 'L\'annonce sera publiée après réception du paiement et validation.';
+        if (lien) {
+            info.textContent = `Pour publier cette annonce, réglez ${montant} € en ligne. `
+                + 'Utilisez bien le même email que votre compte '
+                + (email ? `(${email}) ` : '')
+                + 'afin que nous puissions rapprocher votre paiement de votre annonce. '
+                + 'Elle sera publiée après validation.';
+        } else {
+            info.textContent = 'Un email d\'instructions de paiement vous a été envoyé. '
+                + 'L\'annonce sera publiée après réception du paiement et validation.';
+        }
         bloc.appendChild(info);
     }
 
@@ -138,6 +171,23 @@ function carteAnnonce(ev) {
 
     if (soumettable) {
         actions.appendChild(bouton('Soumettre', 'btn', () => soumettre(ev.id)));
+    }
+    // Paiement en ligne : bouton vers la fiche produit WooCommerce.
+    if (ev.statut === 'en_attente_paiement' && paiement && paiement.lien) {
+        const email = utilisateurCourant ? utilisateurCourant.email : '';
+        const montant = paiement.montant || '10';
+        const a = document.createElement('a');
+        a.className = 'btn';
+        a.href = urlPaiement(paiement.lien, email);
+        a.target = '_blank';
+        a.rel = 'noopener';
+        const ic = document.createElement('span');
+        ic.className = 'msi';
+        ic.setAttribute('aria-hidden', 'true');
+        ic.textContent = 'shopping_cart';
+        a.appendChild(ic);
+        a.appendChild(document.createTextNode(` Payer ${montant} €`));
+        actions.appendChild(a);
     }
     if (modifiable) {
         const a = document.createElement('a');

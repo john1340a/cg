@@ -69,6 +69,7 @@ return static function (Router $r): void {
     // ------------------------------------------------------------
     // Modération des annonces
     $r->get('/api/admin/events',                    [new AdminController(), 'listEvents']);
+    $r->get('/api/admin/events/export',             [new AdminController(), 'exportEvents']);
     $r->post('/api/admin/events',                   [new AdminController(), 'createFor']);
     $r->post('/api/admin/events/{id}/paiement-recu',[new AdminController(), 'paiementRecu']);
     $r->post('/api/admin/events/{id}/valider',      [new AdminController(), 'valider']);

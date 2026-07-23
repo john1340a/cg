@@ -52,6 +52,19 @@ final class AdminController
     }
 
     /**
+     * GET /api/admin/events/export
+     * Exporte toutes les annonces (tous statuts) en fichier texte téléchargeable.
+     */
+    public function exportEvents(Request $request): void
+    {
+        Auth::requireAdmin();
+        $events = $this->events->findForAdmin(null);
+        $contenu = (new \App\Services\EventTextFormatter())->build($events);
+        $nom = 'bourses-mineraux_' . date('Y-m-d') . '.txt';
+        Response::download($contenu, $nom);
+    }
+
+    /**
      * POST /api/admin/events/{id}/paiement-recu
      */
     public function paiementRecu(Request $request, array $params): void
@@ -199,7 +212,7 @@ final class AdminController
         $data = $request->json();
         // Clés éditables autorisées (liste blanche)
         $autorisees = ['instructions_paiement', 'email_expediteur', 'nom_expediteur',
-                       'montant_annonce', 'iframe_domain'];
+                       'montant_annonce', 'iframe_domain', 'lien_paiement'];
         foreach ($autorisees as $cle) {
             if (array_key_exists($cle, $data)) {
                 $this->settings->set($cle, (string) $data[$cle]);

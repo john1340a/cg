@@ -67,15 +67,23 @@ final class EventService
 
         // Email d'instructions de paiement
         $instructions = $this->settings->get('instructions_paiement', '');
+        $lienPaiement = (string) ($this->settings->get('lien_paiement', '') ?? '');
+        // Pré-remplit l'email dans l'URL WooCommerce (rapprochement).
+        if ($lienPaiement !== '') {
+            $sep = str_contains($lienPaiement, '?') ? '&' : '?';
+            $lienPaiement .= $sep . 'email=' . rawurlencode((string) $user['email']);
+        }
         $this->mail->send(
             (string) $user['email'],
             'Instructions de paiement pour votre annonce',
             'instructions_paiement',
             [
-                'prenom'       => $user['prenom'],
-                'intitule'     => $event['intitule'],
-                'montant'      => $montant,
-                'instructions' => $instructions,
+                'prenom'        => $user['prenom'],
+                'intitule'      => $event['intitule'],
+                'montant'       => $montant,
+                'instructions'  => $instructions,
+                'lien_paiement' => $lienPaiement,
+                'email'         => (string) $user['email'],
             ]
         );
 

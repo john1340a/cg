@@ -29,9 +29,16 @@
             <h1>Paramètres</h1>
 
             <div class="champ">
+                <label for="p-lien-paiement">Lien de paiement en ligne (produit WooCommerce)</label>
+                <input type="url" id="p-lien-paiement"
+                       placeholder="https://mineralogique.com/produit/publication-devenement-sur-la-carte/">
+                <p class="aide">Fiche produit vers laquelle l'organisateur non abonné est redirigé
+                   pour régler l'annonce. L'email de l'annonce est ajouté à l'URL pour faciliter le rapprochement.</p>
+            </div>
+            <div class="champ">
                 <label for="p-instructions">Instructions de paiement (email + écran)</label>
                 <textarea id="p-instructions" rows="8"></textarea>
-                <p class="aide">Coordonnées de virement / chèque affichées à l'organisateur non abonné.</p>
+                <p class="aide">Repli affiché si aucun lien de paiement n'est renseigné (virement / chèque).</p>
             </div>
             <div class="ligne-2">
                 <div class="champ">

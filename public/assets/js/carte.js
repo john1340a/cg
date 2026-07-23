@@ -46,6 +46,15 @@ function styleFond(nom) {
 let carte, popupCourante = null;
 let dernieresFeatures = [];
 
+/* Bornes de la France métropolitaine (Corse incluse) : [ouest, sud, est, nord].
+   Sert au cadrage initial, indépendamment de la position des événements. */
+const BORNES_FRANCE = [[-5.2, 41.3], [9.6, 51.1]];
+
+/** Cadre la vue sur la France métropolitaine (sans animation). */
+function cadrerFrance() {
+    carte.fitBounds(BORNES_FRANCE, { padding: 20, animate: false });
+}
+
 /**
  * Initialise la carte. options = { embed: bool }.
  * En mode embed, on masque une partie du chrome (géré côté HTML/CSS).
@@ -57,6 +66,9 @@ function initCarte(options = {}) {
     carte = new maplibregl.Map({
         container: 'carte',
         style: styleFond('osm'),
+        // Cadrage initial : toujours la France métropolitaine (Corse incluse),
+        // quels que soient les événements (même à l'étranger : US, UK…).
+        // fitBounds ci-dessous ajuste précisément selon la taille du cadre.
         center: [2.4, 46.6],
         zoom: 5,
         attributionControl: false,   // on gère l'attribution nous-mêmes (évite le doublon)
@@ -65,6 +77,7 @@ function initCarte(options = {}) {
     carte.addControl(new maplibregl.AttributionControl({ compact: true }));
 
     carte.on('load', () => {
+        cadrerFrance();
         ajouterSourceEtCouches();
         chargerEvenements();
     });
