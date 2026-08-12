@@ -132,6 +132,7 @@ async function chargerAnnonce(id) {
         el('type_echanges').checked = !!ev.type_echanges;
         el('type_vente').checked = !!ev.type_vente;
         el('cat_mineraux').checked = !!ev.cat_mineraux;
+        el('cat_micromineraux').checked = !!ev.cat_micromineraux;
         el('cat_fossiles').checked = !!ev.cat_fossiles;
         el('cat_gemmes').checked = !!ev.cat_gemmes;
         el('cat_esoterisme').checked = !!ev.cat_esoterisme;
@@ -169,8 +170,8 @@ function construireFormData() {
     const champs = ['intitule', 'edition_num', 'date_debut', 'date_fin',
                     'adresse', 'tarif', 'contact_email', 'site_web', 'lon', 'lat'];
     champs.forEach((c) => fd.append(c, el(c).value));
-    ['type_echanges', 'type_vente', 'cat_mineraux', 'cat_fossiles',
-     'cat_gemmes', 'cat_esoterisme'].forEach((c) => {
+    ['type_echanges', 'type_vente', 'cat_mineraux', 'cat_micromineraux',
+     'cat_fossiles', 'cat_gemmes', 'cat_esoterisme'].forEach((c) => {
         fd.append(c, el(c).checked ? '1' : '0');
     });
     const f = el('affiche').files[0];
@@ -184,7 +185,7 @@ function validerClient() {
     if (!el('date_debut').value || !el('date_fin').value) return 'Les dates sont obligatoires.';
     if (el('date_fin').value < el('date_debut').value) return 'La date de fin doit suivre la date de début.';
     if (!el('type_echanges').checked && !el('type_vente').checked) return 'Choisissez au moins un type.';
-    if (!el('cat_mineraux').checked && !el('cat_fossiles').checked
+    if (!el('cat_mineraux').checked && !el('cat_micromineraux').checked && !el('cat_fossiles').checked
         && !el('cat_gemmes').checked && !el('cat_esoterisme').checked) return 'Choisissez au moins une catégorie.';
     if (!el('adresse').value.trim()) return 'L\'adresse est obligatoire.';
     if (!el('lon').value || !el('lat').value) return 'Localisez l\'adresse (bouton « Localiser » ou clic sur la carte).';

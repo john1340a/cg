@@ -19,7 +19,8 @@ final class EventModel
 
     /** Colonnes « métier » communes aux SELECT (hors geom). */
     private const COLS = 'id, owner_id, intitule, edition_num, date_debut, date_fin,
-        type_echanges, type_vente, cat_mineraux, cat_fossiles, cat_gemmes, cat_esoterisme,
+        type_echanges, type_vente, cat_mineraux, cat_micromineraux, cat_fossiles,
+        cat_gemmes, cat_esoterisme,
         adresse, tarif, contact_email, site_web, affiche_path, statut, motif_rejet,
         est_gratuite, created_at, updated_at,
         ST_X(geom) AS lon, ST_Y(geom) AS lat';
@@ -40,13 +41,13 @@ final class EventModel
         $sql = 'INSERT INTO events (
                     owner_id, intitule, edition_num, date_debut, date_fin,
                     type_echanges, type_vente,
-                    cat_mineraux, cat_fossiles, cat_gemmes, cat_esoterisme,
+                    cat_mineraux, cat_micromineraux, cat_fossiles, cat_gemmes, cat_esoterisme,
                     adresse, geom, tarif, contact_email, site_web, affiche_path,
                     statut, est_gratuite
                 ) VALUES (
                     :owner, :intitule, :edition, :debut, :fin,
                     :t_ech, :t_vente,
-                    :c_min, :c_fos, :c_gem, :c_eso,
+                    :c_min, :c_micro, :c_fos, :c_gem, :c_eso,
                     :adresse, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
                     :tarif, :contact, :site, :affiche,
                     :statut, :gratuite
@@ -68,7 +69,8 @@ final class EventModel
                     intitule = :intitule, edition_num = :edition,
                     date_debut = :debut, date_fin = :fin,
                     type_echanges = :t_ech, type_vente = :t_vente,
-                    cat_mineraux = :c_min, cat_fossiles = :c_fos,
+                    cat_mineraux = :c_min, cat_micromineraux = :c_micro,
+                    cat_fossiles = :c_fos,
                     cat_gemmes = :c_gem, cat_esoterisme = :c_eso,
                     adresse = :adresse,
                     geom = ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
@@ -101,6 +103,7 @@ final class EventModel
             ':t_ech'    => !empty($d['type_echanges']) ? 1 : 0,
             ':t_vente'  => !empty($d['type_vente']) ? 1 : 0,
             ':c_min'    => !empty($d['cat_mineraux']) ? 1 : 0,
+            ':c_micro'  => !empty($d['cat_micromineraux']) ? 1 : 0,
             ':c_fos'    => !empty($d['cat_fossiles']) ? 1 : 0,
             ':c_gem'    => !empty($d['cat_gemmes']) ? 1 : 0,
             ':c_eso'    => !empty($d['cat_esoterisme']) ? 1 : 0,
@@ -212,10 +215,11 @@ final class EventModel
         }
         // Catégories (au moins une des catégories cochées)
         $catMap = [
-            'mineraux'   => 'cat_mineraux',
-            'fossiles'   => 'cat_fossiles',
-            'gemmes'     => 'cat_gemmes',
-            'esoterisme' => 'cat_esoterisme',
+            'mineraux'      => 'cat_mineraux',
+            'micromineraux' => 'cat_micromineraux',
+            'fossiles'      => 'cat_fossiles',
+            'gemmes'        => 'cat_gemmes',
+            'esoterisme'    => 'cat_esoterisme',
         ];
         if (!empty($filters['categorie']) && isset($catMap[$filters['categorie']])) {
             $sql .= ' AND ' . $catMap[$filters['categorie']] . ' = TRUE';

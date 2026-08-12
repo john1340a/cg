@@ -228,6 +228,7 @@ final class EventController
             'type_echanges' => $bool($request->input('type_echanges')),
             'type_vente'    => $bool($request->input('type_vente')),
             'cat_mineraux'  => $bool($request->input('cat_mineraux')),
+            'cat_micromineraux' => $bool($request->input('cat_micromineraux')),
             'cat_fossiles'  => $bool($request->input('cat_fossiles')),
             'cat_gemmes'    => $bool($request->input('cat_gemmes')),
             'cat_esoterisme'=> $bool($request->input('cat_esoterisme')),
@@ -259,7 +260,7 @@ final class EventController
         if (!$data['type_echanges'] && !$data['type_vente']) {
             $v->required('type_echanges', 'Sélectionnez au moins un type (échanges ou vente).');
         }
-        if (!$data['cat_mineraux'] && !$data['cat_fossiles']
+        if (!$data['cat_mineraux'] && !$data['cat_micromineraux'] && !$data['cat_fossiles']
             && !$data['cat_gemmes'] && !$data['cat_esoterisme']) {
             $v->required('cat_mineraux', 'Sélectionnez au moins une catégorie.');
         }

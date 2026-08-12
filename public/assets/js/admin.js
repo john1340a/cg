@@ -257,7 +257,8 @@ async function chargerUtilisateurs(adminId) {
         conteneur.textContent = '';
         const table = document.createElement('table');
         const thead = document.createElement('thead');
-        thead.appendChild(rangeeTh(['Nom', 'Email', 'Rôle', 'Abonné', 'Actif', 'Action']));
+        thead.appendChild(rangeeTh(['Nom', 'Email', 'Rôle', 'Abonné',
+            'Gratuité illimitée', 'Actif', 'Actions']));
         table.appendChild(thead);
         const tbody = document.createElement('tbody');
         users.forEach((u) => {
@@ -266,15 +267,28 @@ async function chargerUtilisateurs(adminId) {
             tr.appendChild(td(u.email));
             tr.appendChild(td(u.role));
             tr.appendChild(td(u.est_abonne ? 'Oui' : '—'));
+            tr.appendChild(td(u.paiement_exempte ? 'Oui' : '—'));
             tr.appendChild(td(u.est_actif ? 'Oui' : 'Désactivé'));
+
             const tdAction = document.createElement('td');
+            tdAction.style.display = 'flex';
+            tdAction.style.gap = '.4rem';
+            tdAction.style.flexWrap = 'wrap';
+
+            // Exemption de paiement (toutes annonces gratuites)
+            const exempte = !!u.paiement_exempte;
+            tdAction.appendChild(btn(
+                exempte ? 'Retirer gratuité' : 'Gratuité illimitée',
+                exempte ? 'btn secondaire petit' : 'btn petit',
+                () => basculerExemption(u.id, !exempte, adminId)));
+
             if (u.id !== adminId) {
                 const actif = !!u.est_actif;
                 tdAction.appendChild(btn(actif ? 'Désactiver' : 'Réactiver',
                     actif ? 'btn danger petit' : 'btn secondaire petit',
                     () => basculerUser(u.id, !actif, adminId)));
             } else {
-                tdAction.textContent = '(vous)';
+                tdAction.appendChild(td('(vous)'));
             }
             tr.appendChild(tdAction);
             tbody.appendChild(tr);
@@ -288,6 +302,16 @@ async function basculerUser(id, actif, adminId) {
     try {
         await API.post(`/api/admin/users/${id}/desactiver`, { actif });
         afficherAlerte('alerte', 'Utilisateur mis à jour.', 'succes');
+        await chargerUtilisateurs(adminId);
+    } catch (err) { afficherAlerte('alerte', err.message); }
+}
+
+async function basculerExemption(id, exempte, adminId) {
+    try {
+        await API.post(`/api/admin/users/${id}/exemption`, { exempte });
+        afficherAlerte('alerte', exempte
+            ? 'Gratuité illimitée activée : cet organisateur ne paiera plus ses annonces.'
+            : 'Gratuité illimitée retirée.', 'succes');
         await chargerUtilisateurs(adminId);
     } catch (err) { afficherAlerte('alerte', err.message); }
 }

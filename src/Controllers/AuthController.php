@@ -198,6 +198,7 @@ final class AuthController
             'email'      => $user['email'],
             'role'       => $user['role'],
             'est_abonne' => (bool) $user['est_abonne'],
+            'paiement_exempte' => (bool) ($user['paiement_exempte'] ?? false),
         ];
     }
 }

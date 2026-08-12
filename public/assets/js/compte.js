@@ -22,8 +22,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     utilisateurCourant = user;
 
     el('bienvenue').textContent = `Bonjour ${user.prenom}. `
-        + (user.est_abonne ? 'Vous êtes abonné : votre première annonce est gratuite.'
-                           : 'Chaque annonce coûte 10 € pour être publiée.');
+        + (user.paiement_exempte
+            ? 'Vos annonces sont publiées gratuitement.'
+            : (user.est_abonne ? 'Vous êtes abonné : votre première annonce est gratuite.'
+                               : 'Chaque annonce coûte 10 € pour être publiée.'));
 
     // Un admin qui atterrit ici garde un accès direct au back-office.
     if (user.role === 'admin') {

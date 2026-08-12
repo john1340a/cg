@@ -138,6 +138,7 @@ final class AdminController
             'type_echanges' => !empty($data['type_echanges']),
             'type_vente'    => !empty($data['type_vente']),
             'cat_mineraux'  => !empty($data['cat_mineraux']),
+            'cat_micromineraux' => !empty($data['cat_micromineraux']),
             'cat_fossiles'  => !empty($data['cat_fossiles']),
             'cat_gemmes'    => !empty($data['cat_gemmes']),
             'cat_esoterisme'=> !empty($data['cat_esoterisme']),
@@ -185,6 +186,20 @@ final class AdminController
         }
         $actif = (bool) ($request->json()['actif'] ?? false);
         $this->users->setActif($id, $actif);
+        Response::ok(['ok' => true]);
+    }
+
+    /**
+     * POST /api/admin/users/{id}/exemption  { exempte: bool }
+     * Active/désactive l'exemption de paiement d'un organisateur.
+     */
+    public function toggleExemption(Request $request, array $params): void
+    {
+        Auth::requireAdmin();
+        Csrf::requireValid($request);
+        $id = (int) $params['id'];
+        $exempte = (bool) ($request->json()['exempte'] ?? false);
+        $this->users->setPaiementExempte($id, $exempte);
         Response::ok(['ok' => true]);
     }
 

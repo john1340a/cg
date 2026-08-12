@@ -23,17 +23,17 @@ public/               DOCUMENT ROOT (seul dossier exposé au web)
   admin/              back-office (modération, abonnés, utilisateurs, paramètres)
   assets/
     css/              style.css (DA), carte.css, fonts.css, icons.css
-    js/               api.js, auth.js, compte.js, annonce.js, carte.js, admin.js
+    js/               api.js, format.js, auth.js, compte.js, annonce.js, carte.js, admin.js
     fonts/            Montserrat, Roboto, Material Symbols (WOFF2 locaux)
     vendor/           maplibre-gl (js + css)
 src/                  code PHP hors document root (autoload PSR-4 « App\ »)
   Core/               Router, Database, Session, Csrf, Auth, RateLimiter,
                       Validator, Request, Response, App, Env
   Controllers/        Auth, Event, Admin, Subscriber, Upload, Embed, Page
-  Services/           Auth, Event, Geocoding, Image, Mail
+  Services/           Auth, Event, EventTextFormatter, Geocoding, Image, Mail
   Models/             User, Event, Subscriber, Payment, Setting
   routes.php          table des routes
-db/                   migrations SQL (001..003) + migrate.php
+db/                   migrations SQL (001..006) + migrate.php
 scripts/              create_admin.php (compte admin initial)
 storage/              uploads (affiches), logs, emails locaux — hors web
 templates/emails/     gabarits HTML des emails transactionnels
@@ -105,8 +105,9 @@ Le cœur métier est le cycle de vie d'une annonce (`events.statut`) :
 ```
 brouillon
    │  soumission
-   ├─ abonné & 1re annonce ─► en_attente_validation   (gratuite, paiement exonéré)
-   └─ sinon                ─► en_attente_paiement      (paiement 10 € attendu)
+   ├─ compte exempté        ─► en_attente_validation   (toutes annonces gratuites)
+   ├─ abonné & 1re annonce  ─► en_attente_validation   (gratuite, paiement exonéré)
+   └─ sinon                 ─► en_attente_paiement      (paiement 10 € attendu)
 
 en_attente_paiement   ─ admin : « paiement reçu » ──► en_attente_validation
 en_attente_validation ─ admin : « valider » ────────► publie   (+ email, sur la carte)
@@ -117,9 +118,19 @@ rejete                ─ organisateur : modifie ─────► (re-soumissi
 **Invariant** : seules les annonces au statut `publie` sont exposées par
 l'API publique — une annonce non validée n'apparaît **jamais** sur la carte.
 
-Le paiement (10 €) est réglé **hors application** (virement/chèque). L'admin
-constate le règlement et le marque reçu manuellement : aucune passerelle
-bancaire n'est intégrée.
+**Règle de gratuité** (dans l'ordre de priorité) :
+1. **Compte exempté** (`users.paiement_exempte`) : **toutes** les annonces de
+   l'organisateur sont gratuites (ex. organisateur payant déjà une pub pleine
+   page). Activable par l'admin dans Back-office → Utilisateurs.
+2. **Abonné, 1re annonce** : gratuite (paiement exonéré).
+3. **Sinon** : paiement de 10 € attendu.
+
+**Paiement** : l'organisateur non exonéré est redirigé vers la **fiche produit
+WooCommerce** (paramètre `lien_paiement`, avec son email pré-rempli dans l'URL)
+pour régler en ligne. Le rapprochement reste **manuel** : l'admin retrouve la
+commande par email et marque « paiement reçu ». Aucun webhook / passerelle
+bancaire n'est intégré côté application. Un repli virement/chèque
+(`instructions_paiement`) s'affiche si aucun lien n'est configuré.
 
 ---
 
@@ -176,11 +187,13 @@ en-tête `X-CSRF-Token`). Sessions en cookie `HttpOnly` + `SameSite=Lax`.
 | Orga | `PUT\|DELETE /api/mes-annonces/{id}` | édition / suppression |
 | Orga | `POST /api/mes-annonces/{id}/soumettre` | soumission (règle d'état) |
 | Admin | `GET /api/admin/events` | file de modération |
+| Admin | `GET /api/admin/events/export` | export texte (.txt) de toutes les annonces |
 | Admin | `POST /api/admin/events/{id}/paiement-recu\|valider\|rejeter` | modération |
 | Admin | `POST /api/admin/events` | saisie déléguée |
 | Admin | `GET\|PUT /api/admin/settings` | paramètres |
 | Admin | `GET\|POST /api/admin/subscribers`, `.../import`, `DELETE .../{id}` | whitelist abonnés |
 | Admin | `GET /api/admin/users`, `POST .../{id}/desactiver` | utilisateurs |
+| Admin | `POST /api/admin/users/{id}/exemption` | (dés)active la gratuité illimitée d'un compte |
 | Embed | `GET /embed.html` | carte iframe (en-tête CSP) |
 
 Table complète : [`src/routes.php`](../../src/routes.php).
@@ -191,16 +204,24 @@ Table complète : [`src/routes.php`](../../src/routes.php).
 
 | Table | Rôle |
 |-------|------|
-| `users` | organisateurs + admin (email `CITEXT`, mot de passe `bcrypt`, rôle, `est_abonne`) |
+| `users` | organisateurs + admin (email `CITEXT`, `bcrypt`, rôle, `est_abonne`, `paiement_exempte`) |
 | `subscribers_whitelist` | emails abonnés à la revue (1re annonce gratuite) |
 | `events` | annonces (géométrie `Point`/4326, statut, catégories, dates) |
 | `payments_log` | suivi paiements (`attendu` / `recu` / `exonere`) |
-| `settings` | paramètres clé/valeur éditables par l'admin |
+| `settings` | paramètres clé/valeur éditables par l'admin (dont `lien_paiement`) |
 | `rate_limits` | limitation de débit (login / inscription) |
 
-Migrations : [`db/001_init.sql`](../../db/001_init.sql),
-[`db/002_seed_settings.sql`](../../db/002_seed_settings.sql),
-[`db/003_rate_limits.sql`](../../db/003_rate_limits.sql).
+**Catégories** d'une annonce (colonnes booléennes de `events`) :
+`cat_mineraux`, `cat_micromineraux`, `cat_fossiles`, `cat_gemmes`,
+`cat_esoterisme`.
+
+Migrations (appliquées dans l'ordre par [`db/migrate.php`](../../db/migrate.php)) :
+[`001_init`](../../db/001_init.sql),
+[`002_seed_settings`](../../db/002_seed_settings.sql),
+[`003_rate_limits`](../../db/003_rate_limits.sql),
+[`004_lien_paiement`](../../db/004_lien_paiement.sql) (lien WooCommerce),
+[`005_cat_micromineraux`](../../db/005_cat_micromineraux.sql) (catégorie microminéraux),
+[`006_paiement_exempte`](../../db/006_paiement_exempte.sql) (exemption de paiement par compte).
 
 ---
 

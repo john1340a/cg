@@ -18,8 +18,9 @@ le public consulte les événements publiés sur une **carte MapLibre** intégra
 | Géocodage | **API adresse.data.gouv.fr** (BAN), via un proxy backend |
 | Emails | **SMTP alwaysdata** via PHPMailer (mode fichier en local) |
 
-Aucun paiement en ligne : le règlement (10 €) se fait **hors application** (virement/chèque),
-l'admin marque le paiement reçu puis valide.
+Paiement (10 €) via une **fiche produit WooCommerce** (repli virement/chèque si aucun
+lien n'est configuré). Le rapprochement est **manuel** : l'admin marque le paiement
+reçu puis valide. Certains comptes peuvent être **exemptés** (annonces gratuites).
 
 ---
 
@@ -35,11 +36,11 @@ public/            ← document root (à pointer sur alwaysdata)
   assets/          ← css, js, vendor (maplibre)
 src/               ← code PHP (hors document root)
   Core/            ← Router, Database, Session, Csrf, Auth, RateLimiter, Validator, App, Env
-  Controllers/     ← Auth, Event, Admin, Subscriber, Upload, Embed
-  Services/        ← Auth, Event, Geocoding, Image, Mail
+  Controllers/     ← Auth, Event, Admin, Subscriber, Upload, Embed, Page
+  Services/        ← Auth, Event, EventTextFormatter, Geocoding, Image, Mail
   Models/          ← User, Event, Subscriber, Payment, Setting
   routes.php       ← table des routes
-db/                ← migrations SQL (001..003) + migrate.php
+db/                ← migrations SQL (001..006) + migrate.php
 scripts/           ← create_admin.php
 storage/           ← uploads (affiches), logs, emails locaux (hors document root)
 templates/emails/  ← gabarits HTML des emails transactionnels
@@ -104,8 +105,11 @@ La documentation technique détaillée se trouve dans [`docs/`](docs/) :
   [`docs/architecture/overview.md`](docs/architecture/overview.md#routes-api-résumé).
 - **Cycle de vie d'une annonce** : `brouillon → en_attente_paiement /
   en_attente_validation → publie / rejete`. Une annonce non `publie`
-  n'apparaît **jamais** sur la carte. Paiement (10 €) hors application,
-  marqué reçu manuellement par l'admin.
+  n'apparaît **jamais** sur la carte. Gratuité si **compte exempté** ou
+  **1re annonce d'un abonné** ; sinon paiement 10 € via **fiche produit
+  WooCommerce** (rapprochement manuel par l'admin).
+- **Catégories** : minéraux, microminéraux, fossiles, gemmes/bijoux,
+  ésotérisme/lithothérapie.
 - **Sécurité** : PDO préparé, CSRF, sessions durcies, rate limiting, uploads
   contrôlés (MIME réel + resize GD, hors racine web), CSP `frame-ancestors`
   pour l'iframe. Détails dans [`docs/libs/backend.md`](docs/libs/backend.md#sécurité).

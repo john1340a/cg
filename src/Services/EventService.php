@@ -47,6 +47,15 @@ final class EventService
         $eventId = (int) $event['id'];
         $userId  = (int) $user['id'];
 
+        // Compte exempté de paiement (ex. organisateur payant déjà une pub
+        // pleine page) : TOUTES ses annonces sont gratuites, sans supplément.
+        if (!empty($user['paiement_exempte'])) {
+            $this->events->setStatut($eventId, 'en_attente_validation');
+            $this->markGratuite($eventId);
+            $this->payments->create($eventId, 0.0, 'exonere', 'Compte exempté de paiement');
+            return ['statut' => 'en_attente_validation', 'est_gratuite' => true];
+        }
+
         // « 1re annonce » = aucune annonce déjà payée/gratuite auparavant.
         // On considère la 1re soumission gratuite si l'utilisateur est
         // abonné et n'a encore aucune annonce non-brouillon.
@@ -224,10 +233,11 @@ final class EventService
             'type_echanges' => (bool) $e['type_echanges'],
             'type_vente'    => (bool) $e['type_vente'],
             'categories'  => array_values(array_filter([
-                $e['cat_mineraux']   ? 'Minéraux'                 : null,
-                $e['cat_fossiles']   ? 'Fossiles'                 : null,
-                $e['cat_gemmes']     ? 'Gemmes/bijoux'            : null,
-                $e['cat_esoterisme'] ? 'Ésotérisme/lithothérapie' : null,
+                $e['cat_mineraux']      ? 'Minéraux'                 : null,
+                $e['cat_micromineraux'] ? 'Microminéraux'            : null,
+                $e['cat_fossiles']      ? 'Fossiles'                 : null,
+                $e['cat_gemmes']        ? 'Gemmes/bijoux'            : null,
+                $e['cat_esoterisme']    ? 'Ésotérisme/lithothérapie' : null,
             ])),
             'adresse'       => $e['adresse'],
             'tarif'         => $e['tarif'],

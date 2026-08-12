@@ -140,7 +140,8 @@ final class UserModel
     public function all(): array
     {
         return $this->pdo->query(
-            'SELECT id, nom, prenom, email, role, est_abonne, est_actif, created_at
+            'SELECT id, nom, prenom, email, role, est_abonne, est_actif,
+                    paiement_exempte, created_at
              FROM users ORDER BY created_at DESC'
         )->fetchAll();
     }
@@ -149,5 +150,16 @@ final class UserModel
     {
         $stmt = $this->pdo->prepare('UPDATE users SET est_actif = :a WHERE id = :id');
         $stmt->execute([':a' => $actif ? 1 : 0, ':id' => $userId]);
+    }
+
+    /**
+     * Active/désactive l'exemption de paiement d'un compte : quand elle
+     * est active, toutes les annonces de l'organisateur sont gratuites
+     * (ex. organisateur payant déjà une pub pleine page).
+     */
+    public function setPaiementExempte(int $userId, bool $exempte): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE users SET paiement_exempte = :e WHERE id = :id');
+        $stmt->execute([':e' => $exempte ? 1 : 0, ':id' => $userId]);
     }
 }

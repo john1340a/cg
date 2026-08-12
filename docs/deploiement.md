@@ -111,6 +111,9 @@ IFRAME_ALLOWED_ORIGINS = https://mineralogique.com https://www.mineralogique.com
   **Back-office → Paramètres** (prioritaire sur la variable d'environnement).
 - Tant qu'aucune boîte mail n'est prête, mettre `MAIL_ENABLED = false` : les
   emails sont écrits dans `storage/logs/mails/` au lieu d'être expédiés.
+- **Lien de paiement WooCommerce** : configuré dans **Back-office → Paramètres**
+  (`lien_paiement`, valeur par défaut fournie par la migration 004), pas via une
+  variable d'environnement.
 
 ---
 
@@ -122,7 +125,10 @@ cd ~/www/bourses-mineraux
 # Dépendances (si vendor/ n'a pas été envoyé)
 composer install --no-dev --optimize-autoloader
 
-# Migrations : extensions PostGIS, tables, index
+# Migrations : extensions PostGIS, tables, index, puis évolutions
+# (004 lien de paiement, 005 catégorie microminéraux, 006 exemption de
+# paiement). Idempotent : n'applique que ce qui manque. À relancer après
+# CHAQUE déploiement introduisant une nouvelle migration db/*.sql.
 php db/migrate.php
 
 # Compte administrateur initial
@@ -164,7 +170,32 @@ l'iframe est bloquée par le navigateur.
 
 ---
 
-## 8. Cron (optionnel)
+## 8. Paiement en ligne (WooCommerce)
+
+L'organisateur non exonéré est redirigé vers une **fiche produit WooCommerce**
+pour régler les 10 €.
+
+1. **Back-office → Paramètres** : renseigner **« Lien de paiement en ligne »**
+   (`lien_paiement`) avec l'URL du produit, ex.
+   `https://mineralogique.com/produit/publication-devenement-sur-la-carte/`.
+2. L'app ajoute automatiquement `?email=<email du compte>` à l'URL (bouton
+   « Payer » du tableau de bord + bouton dans l'email d'instructions).
+3. **Rapprochement manuel** : l'admin retrouve la commande dans WooCommerce par
+   l'email, puis clique **« paiement reçu »** dans la file de modération, ce qui
+   passe l'annonce en attente de validation.
+
+> Le paramètre `?email=` n'est **pas** lu nativement par WooCommerce : le client
+> saisit son email au checkout (le message lui rappelle d'utiliser le **même**
+> email que son compte). Un pré-remplissage automatique nécessiterait un snippet
+> côté WordPress.
+
+**Gratuité illimitée** : pour un organisateur payant déjà une prestation (ex.
+pub pleine page), activer **Back-office → Utilisateurs → « Gratuité illimitée »**.
+Toutes ses annonces passent alors directement en validation, sans paiement.
+
+---
+
+## 9. Cron (optionnel)
 
 Pour purger périodiquement la table de limitation de débit (`rate_limits`),
 planifier via alwaysdata → **Tâches planifiées** :
@@ -175,16 +206,22 @@ php -r "require 'vendor/autoload.php'; App\Core\Env::load(); App\Core\RateLimite
 
 ---
 
-## 9. Vérifications post-déploiement
+## 10. Vérifications post-déploiement
 
+- [ ] `php db/migrate.php` exécuté (colonnes `cat_micromineraux`,
+      `paiement_exempte` et paramètre `lien_paiement` présents).
 - [ ] `https://<domaine>/` affiche l'accueil (route `/` servie par le routeur).
-- [ ] `https://<domaine>/carte.html` charge la carte et les événements publiés.
+- [ ] `https://<domaine>/carte.html` charge la carte (cadrée France) et les
+      événements publiés ; filtre catégorie « Microminéraux » présent.
 - [ ] `https://<domaine>/api/csrf` renvoie un jeton JSON (routage OK).
 - [ ] Inscription + email de confirmation reçu (ou écrit dans les logs).
 - [ ] `https://<domaine>/embed.html` renvoie l'en-tête
       `Content-Security-Policy: frame-ancestors …`.
 - [ ] L'iframe s'affiche dans la page WordPress de test (desktop + mobile).
 - [ ] Le back-office `/admin/` est accessible avec le compte admin.
+- [ ] **Paramètres** : « Lien de paiement » renseigné ; bouton « Payer » visible
+      sur une annonce en attente de paiement.
+- [ ] **Export** : le bouton « Exporter les annonces (.txt) » télécharge le fichier.
 
 ## Dépannage courant
 

@@ -32,23 +32,40 @@ direction artistique alignée sur `mineralogique.com`.
 | Fichier | Rôle |
 |---------|------|
 | `api.js` | client HTTP partagé : cache du jeton CSRF, `get/post/put/del`, multipart, helpers DOM |
+| `format.js` | **formatage partagé** des annonces (titre ordinal, dates lisibles, `Ville (dépt)`) — utilisé par carte / admin / compte |
 | `auth.js` | pages connexion / inscription / mot de passe oublié ; redirige admin → `/admin/` |
-| `compte.js` | tableau de bord organisateur (liste, soumettre, supprimer) |
+| `compte.js` | tableau de bord organisateur (liste, soumettre, supprimer, **bouton « Payer » WooCommerce**) |
 | `annonce.js` | formulaire annonce : géocodage BAN, mini-carte, marqueur déplaçable, upload |
-| `carte.js` | **carte publique + embed** : GeoJSON, fonds, couleur par mois, filtres, popups |
-| `admin.js` | back-office : modération, abonnés (import CSV), utilisateurs, paramètres |
+| `carte.js` | **carte publique + embed** : GeoJSON, fonds, pins par mois, filtres, popups |
+| `admin.js` | back-office : modération (+ **export .txt**), abonnés (import CSV), utilisateurs (+ **exemption**), paramètres |
+
+> **`format.js`** est chargé **avant** `carte.js` / `admin.js` / `compte.js`
+> sur les pages qui affichent des annonces. Il centralise : titre
+> « 53ème Salon (ventes-échanges) », dates (« 17-19 juillet 2026 »), et
+> `Ville (dépt)` déduite du code postal (gère Corse `2A/2B` et DOM `97x/98x`),
+> avec repli sur l'adresse brute si aucun code postal.
 
 ### `carte.js` — points clés
 
-- **Fonds commutables** : OSM, CartoDB Positron (clair), Esri World Imagery
-  (satellite), déclarés comme styles raster MapLibre.
-- **Symbologie par mois** : expression `match` sur la propriété `mois`
-  (12 couleurs) + légende. Data-viz : la palette reste distincte de la DA.
-- **Filtres dynamiques** : chaque changement relance `GET /api/events` et
-  met à jour la carte + la liste latérale **sans rechargement de page**.
+- **Cadrage initial France** : au `load`, `fitBounds` sur les frontières de la
+  France métropolitaine (Corse incluse) — la vue s'ouvre **toujours** sur la
+  France quels que soient les événements (même à l'étranger). Navigation libre
+  ensuite ; le clic sur un événement y vole (`flyTo`).
+- **Marqueurs « pins »** : épingles goutte colorées par mois (couche `symbol`,
+  images générées sur canvas via `addImage`, une par mois `pin-1`…`pin-12`),
+  avec un losange minéral blanc. Réenregistrées au changement de fond
+  (`setStyle` purge images + couches).
+- **Symbologie par mois** : 12 couleurs + légende. Data-viz : la palette reste
+  distincte de la DA.
+- **Filtres dynamiques** : mois, période, **catégorie** (minéraux,
+  microminéraux, fossiles, gemmes, ésotérisme), type, passés. Chaque changement
+  relance `GET /api/events` et met à jour carte + liste **sans rechargement**.
+- **Popup** : titre + en-tête « dates, Ville (dépt) » (via `format.js`) ; la
+  ligne adresse n'affiche que le lieu précis, **sans répéter la ville**.
 - **Attribution** : `attributionControl: false` à la création puis un seul
   contrôle `compact` ajouté manuellement (évite le doublon d'attribution).
 - **Partage carte / embed** : `initCarte({ embed: bool })` sert les deux pages.
+  L'embed ajoute un bouton **« Publier ma bourse »** (nouvel onglet).
 
 ---
 
@@ -74,7 +91,10 @@ Feuilles : `assets/css/style.css` (charte), `carte.css` (carte/embed),
 - **Rôle** : Montserrat + Roboto (typo), Material Symbols Outlined (icônes).
 - **Pourquoi** : servies **en local** en WOFF2 — aucun CDN, condition
   nécessaire à la **CSP stricte** de l'embed iframe. Material Symbols est
-  sous-ensemblée aux seules icônes utilisées (~137 Ko au lieu de ~4 Mo).
+  sous-ensemblée par **codepoints exacts** aux seules icônes utilisées
+  (~4 Ko pour ~21 icônes, au lieu de ~4 Mo). Régénération : subset des
+  codepoints des icônes référencées, avec `--no-layout-closure` pour ne pas
+  réintégrer toutes les ligatures.
 - **Icônes** : remplacent les emojis via ligatures (`<span class="msi">event</span>`
   → icône calendrier). Décoratives → `aria-hidden="true"`.
 - Fichiers : `assets/fonts/montserrat.woff2`, `roboto.woff2`,

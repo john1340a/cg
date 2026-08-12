@@ -226,10 +226,11 @@ final class EventTextFormatter
     private function categories(array $e): string
     {
         $c = [];
-        if (!empty($e['cat_mineraux']))   $c[] = 'Minéraux';
-        if (!empty($e['cat_fossiles']))   $c[] = 'Fossiles';
-        if (!empty($e['cat_gemmes']))     $c[] = 'Gemmes/bijoux';
-        if (!empty($e['cat_esoterisme'])) $c[] = 'Ésotérisme/lithothérapie';
+        if (!empty($e['cat_mineraux']))      $c[] = 'Minéraux';
+        if (!empty($e['cat_micromineraux'])) $c[] = 'Microminéraux';
+        if (!empty($e['cat_fossiles']))      $c[] = 'Fossiles';
+        if (!empty($e['cat_gemmes']))        $c[] = 'Gemmes/bijoux';
+        if (!empty($e['cat_esoterisme']))    $c[] = 'Ésotérisme/lithothérapie';
         return implode(', ', $c);
     }
 }

@@ -15,7 +15,7 @@ délèguent aux services, formatent la réponse JSON. **Aucune logique métier.*
 |------------|------|
 | `AuthController` | inscription, connexion, déconnexion, mot de passe oublié / reset |
 | `EventController` | CRUD des annonces de l'organisateur + endpoints publics (carte) + géocodage |
-| `AdminController` | modération, paiements, valider/rejeter, utilisateurs, paramètres, saisie déléguée |
+| `AdminController` | modération, paiements, valider/rejeter, utilisateurs (dont exemption de paiement), paramètres, saisie déléguée, export texte des annonces |
 | `SubscriberController` | whitelist abonnés : liste, ajout, suppression, import CSV |
 | `UploadController` | sert les affiches stockées hors racine web (contrôle du type) |
 | `EmbedController` | sert `embed.html` avec l'en-tête CSP `frame-ancestors` |
@@ -39,11 +39,24 @@ Logique métier réutilisable, indépendante du transport HTTP.
   (réponse identique que l'email existe ou non au « mot de passe oublié »).
 
 ### `EventService`
-- **Rôle** : règle de soumission (gratuité 1re annonce abonné vs paiement 10 €),
-  transitions valider/rejeter/paiement, transformation en GeoJSON.
+- **Rôle** : règle de soumission, transitions valider/rejeter/paiement,
+  transformation en GeoJSON.
+- **Règle de gratuité** (par priorité) : compte **exempté**
+  (`paiement_exempte`) → toutes annonces gratuites ; sinon **abonné + 1re
+  annonce** → gratuite ; sinon **paiement 10 €**. Pour ce dernier cas, l'email
+  d'instructions inclut le **lien WooCommerce** (`lien_paiement`) avec l'email
+  pré-rempli.
 - **Pourquoi** : porte la machine à états des annonces (voir
   [`overview.md`](../architecture/overview.md)) et garantit l'invariant
   « non publié = jamais sur la carte ».
+
+### `EventTextFormatter`
+- **Rôle** : met en forme les annonces en **texte** pour l'export admin
+  (`GET /api/admin/events/export`), au format « revue » : titre ordinal
+  (« 53ème Salon »), dates lisibles, `Ville (dépt)` déduite du code postal,
+  contact, catégories, statut/organisateur.
+- **Pourquoi** : reproduit côté serveur la présentation de
+  [`format.js`](frontend.md) pour un rendu cohérent écran / fichier.
 
 ### `GeocodingService`
 - **Rôle** : géocodage d'adresses françaises via la **Base Adresse Nationale**
@@ -74,7 +87,7 @@ Accès aux données en **requêtes PDO préparées** (protection injection SQL).
 
 | Modèle | Table | Notes |
 |--------|-------|-------|
-| `UserModel` | `users` | recherche par email/id, jetons reset, flag abonné, activation |
+| `UserModel` | `users` | recherche par email/id, jetons reset, flags abonné / exemption de paiement, activation |
 | `EventModel` | `events` | écrit/lit la géométrie via `ST_MakePoint` / `ST_X`/`ST_Y`, filtres carte |
 | `SubscriberModel` | `subscribers_whitelist` | test d'appartenance, ajout idempotent |
 | `PaymentModel` | `payments_log` | création, passage à `recu` |

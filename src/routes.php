@@ -78,6 +78,7 @@ return static function (Router $r): void {
     // Utilisateurs
     $r->get('/api/admin/users',                     [new AdminController(), 'listUsers']);
     $r->post('/api/admin/users/{id}/desactiver',    [new AdminController(), 'toggleUser']);
+    $r->post('/api/admin/users/{id}/exemption',     [new AdminController(), 'toggleExemption']);
 
     // Paramètres
     $r->get('/api/admin/settings',                  [new AdminController(), 'getSettings']);
